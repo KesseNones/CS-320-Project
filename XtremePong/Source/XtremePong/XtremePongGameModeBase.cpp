@@ -12,7 +12,7 @@ void AXtremePongGameModeBase::ChangeMenuWidget(TSubclassOf<UUserWidget> NewWidge
 
 	// Remove whatever User Widget is active in the viewport, if any
 	if (CurrentWidget != nullptr) {
-		CurrentWidget->RemoveFromViewport();
+		CurrentWidget->RemoveFromParent();
 		CurrentWidget = nullptr;
 	}
 
