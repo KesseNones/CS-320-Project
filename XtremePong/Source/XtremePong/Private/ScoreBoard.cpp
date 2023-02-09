@@ -1,10 +1,13 @@
 //Jesse A. Jones
-//4 Feb, 2023
+//9 Feb, 2023
 //XtremePong
 
 
 #include "ScoreBoard.h"
 #include <string>
+#include "Engine/World.h"
+#include "Engine/Engine.h"
+#include <Components/TextRenderComponent.h>
 using namespace std;
 
 // Sets default values
@@ -21,6 +24,7 @@ AScoreBoard::AScoreBoard()
 	maxRoundCount = 3;
 
 	scoreModel = nullptr;
+	Game = GetWorld();
 	//Displays initial gamestate.
 	updateScoreboard();
 }
@@ -36,6 +40,9 @@ void AScoreBoard::BeginPlay()
 void AScoreBoard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	//Checks for win and updates board state every frame.
+	isWin();
+	updateScoreboard();
 
 }
 
@@ -80,12 +87,26 @@ void AScoreBoard::updateScoreboard() {
 
 	//Spawns score representation 
 	// in the world if it doesn't exist yet.
-	if (scoreModel != nullptr) {
+	if (scoreModel == nullptr) {
 		//DOCS: 
-		// https://docs.unrealengine.com/5.1/
-		// en-US/spawning-actors-in-unreal-engine/
+		// https://docs.unrealengine.com/5.1/en-US/spawning-actors-in-unreal-engine/
 		// 
 		//USE SPAWNACTOR FUNCTION.
 		//USAGE: MyHUD = SpawnActor<AHUD>(this, Instigator);
+		
+		//If valid game state exits, the scoreboard is spawned.
+		if (Game) {
+			FVector SpawnLocation(0.0f, -31530.0f, 20.0f);
+			FRotator SpawnRotation(0.0f, 90.0f, 90.0f);
+
+			scoreModel = Game->SpawnActor<UTextRenderComponent>(
+				SpawnLocation, SpawnRotation);
+		}
+
+	}
+	else {
+		//VERY LIKELY BROKEN!!!
+		//Updates scoreboard text to new one.
+		scoreModel->SetText(FText::FromString(scoreText));
 	}
 }

@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//7 Feb, 2023
+//9 Feb, 2023
 //XtremePong
 
 #pragma once
@@ -10,14 +10,20 @@
 
 UCLASS()
 class XTREMEPONG_API AScoreBoard : public AActor{
-	
-public:	
+	GENERATED_BODY()
+
+private:	
 	// Sets default values for this actor's properties
 	AScoreBoard();
 
 	//Visual component created.
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent *VisualMesh;
+
+	//Members used to display the score.
+	std::string scoreText;
+	UTextRenderComponent* scoreModel;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,13 +33,10 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	GENERATED_BODY()
-
 	int player1Score, player2Score,
 		gameRound, roundWinCount, maxRoundCount;
-	
-	std::string scoreText;
-	AActor* scoreModel;
+
+	UWorld *Game;
 
 	//Increases the score of a given player by 1.
 	void incrementPlayerScore(bool isPlayerOne);
