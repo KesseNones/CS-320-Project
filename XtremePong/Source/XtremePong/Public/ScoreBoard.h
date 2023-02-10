@@ -22,8 +22,7 @@ private:
 
 	//Members used to display the score.
 	std::string scoreText;
-	UTextRenderComponent* scoreModel;
-
+	UTextRenderComponent scoreModel;
 
 protected:
 	// Called when the game starts or when spawned

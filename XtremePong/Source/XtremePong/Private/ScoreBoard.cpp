@@ -2,7 +2,6 @@
 //9 Feb, 2023
 //XtremePong
 
-
 #include "ScoreBoard.h"
 #include <string>
 #include "Engine/World.h"
@@ -105,8 +104,7 @@ void AScoreBoard::updateScoreboard() {
 
 	}
 	else {
-		//VERY LIKELY BROKEN!!!
 		//Updates scoreboard text to new one.
-		scoreModel->SetText(FText::FromString(scoreText));
+		scoreModel->SetText(FText::FromString(scoreText.c_str()));
 	}
 }
