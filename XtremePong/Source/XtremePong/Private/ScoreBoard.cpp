@@ -1,12 +1,9 @@
 //Jesse A. Jones
-//9 Feb, 2023
+//10 Feb, 2023
 //XtremePong
 
 #include "ScoreBoard.h"
 #include <string>
-#include "Engine/World.h"
-#include "Engine/Engine.h"
-#include <Components/TextRenderComponent.h>
 using namespace std;
 
 // Sets default values
@@ -23,7 +20,6 @@ AScoreBoard::AScoreBoard()
 	maxRoundCount = 3;
 
 	scoreModel = nullptr;
-	Game = GetWorld();
 	//Displays initial gamestate.
 	updateScoreboard();
 }
@@ -74,7 +70,7 @@ void AScoreBoard::resetScoreToNewRound() {
 
 	//Enters end state if max rounds reached.
 	if (gameRound > maxRoundCount) {
-		//END GAME LEVEL SOMEHOW.
+		//END GAME LEVEL SOMEHOW. PERHAPS CHANGE LEVEL!
 	}
 }
 
@@ -93,14 +89,25 @@ void AScoreBoard::updateScoreboard() {
 		//USE SPAWNACTOR FUNCTION.
 		//USAGE: MyHUD = SpawnActor<AHUD>(this, Instigator);
 		
-		//If valid game state exits, the scoreboard is spawned.
-		if (Game) {
-			FVector SpawnLocation(0.0f, -31530.0f, 20.0f);
-			FRotator SpawnRotation(0.0f, 90.0f, 90.0f);
+		//Creates scoreboard.
+		scoreModel = CreateDefaultSubobject<UTextRenderComponent>(FName("Score"));
 
-			scoreModel = Game->SpawnActor<UTextRenderComponent>(
-				SpawnLocation, SpawnRotation);
-		}
+		//Sets position and rotation on board.
+		scoreModel->SetRelativeLocation(FVector(0.0f, -31530.0f, 20.0f));
+		scoreModel->SetRelativeRotation(FRotator(0.0f, 90.0f, 90.0f));
+
+		//Scales letters to appropriate dimensions.
+		scoreModel->SetXScale(1.0f);
+		scoreModel->SetYScale(1.0f);
+		scoreModel->SetWorldSize(75.0f); //MIGHT BE INCORRECT
+
+		//Sets alignment and hooks component 
+		// to root to make it part of the level.
+		scoreModel->SetHorizontalAlignment(EHTA_Center);
+		scoreModel->SetVerticalAlignment(EVerticalTextAligment::EVRTA_TextCenter);
+		scoreModel->SetTextRenderColor(FColor::White);
+		scoreModel->SetupAttachment(RootComponent);
+
 
 	}
 	else {

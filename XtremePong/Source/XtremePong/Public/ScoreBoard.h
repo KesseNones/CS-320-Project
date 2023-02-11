@@ -1,11 +1,15 @@
 //Jesse A. Jones
-//9 Feb, 2023
+//10 Feb, 2023
 //XtremePong
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Components/TextRenderComponent.h"
+#include "Engine/EngineTypes.h"
+#include "Engine/Engine.h"
+#include "Engine/World.h"
 #include "ScoreBoard.generated.h"
 
 UCLASS()
@@ -17,12 +21,13 @@ private:
 	AScoreBoard();
 
 	//Visual component created.
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent *VisualMesh;
+	// UPROPERTY(VisibleAnywhere)
+	// UStaticMeshComponent *VisualMesh; //DELETE LATER??
 
 	//Members used to display the score.
 	std::string scoreText;
-	UTextRenderComponent scoreModel;
+	UPROPERTY(VisibleAnywhere)
+	UTextRenderComponent* scoreModel;
 
 protected:
 	// Called when the game starts or when spawned
@@ -34,8 +39,6 @@ public:
 
 	int player1Score, player2Score,
 		gameRound, roundWinCount, maxRoundCount;
-
-	UWorld *Game;
 
 	//Increases the score of a given player by 1.
 	void incrementPlayerScore(bool isPlayerOne);
