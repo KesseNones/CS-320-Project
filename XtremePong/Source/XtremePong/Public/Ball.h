@@ -15,9 +15,14 @@ public:
 	// Sets default values for this actor's properties
 	ABall();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, category = "Mesh")
+		UStaticMeshComponent* StaticMesh;
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
 
 public:	
 	// Called every frame
