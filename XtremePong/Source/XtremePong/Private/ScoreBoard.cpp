@@ -36,8 +36,13 @@ void AScoreBoard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	//Checks for win and updates board state every frame.
-	isWin();
-	updateScoreboard();
+	// isWin();
+	// updateScoreboard();
+
+	if (((int)DeltaTime) % 60 == 0){
+		incrementPlayerScore(true);
+		updateScoreboard();
+	}
 
 }
 
@@ -93,13 +98,13 @@ void AScoreBoard::updateScoreboard() {
 		scoreModel = CreateDefaultSubobject<UTextRenderComponent>(FName("Score"));
 
 		//Sets position and rotation on board.
-		scoreModel->SetRelativeLocation(FVector(0.0f, -31530.0f, 20.0f));
-		scoreModel->SetRelativeRotation(FRotator(0.0f, 90.0f, 90.0f));
+		scoreModel->SetRelativeLocation(FVector(0.0f, 0.0f, 1000.0f));
+		scoreModel->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 
 		//Scales letters to appropriate dimensions.
 		scoreModel->SetXScale(1.0f);
 		scoreModel->SetYScale(1.0f);
-		scoreModel->SetWorldSize(75.0f); //MIGHT BE INCORRECT
+		scoreModel->SetWorldSize(500.0f); //MIGHT BE INCORRECT
 
 		//Sets alignment and hooks component 
 		// to root to make it part of the level.
@@ -108,7 +113,8 @@ void AScoreBoard::updateScoreboard() {
 		scoreModel->SetTextRenderColor(FColor::White);
 		scoreModel->SetupAttachment(RootComponent);
 
-
+		//Sets text display.
+		scoreModel->SetText(FText::FromString(scoreText.c_str()));
 	}
 	else {
 		//Updates scoreboard text to new one.

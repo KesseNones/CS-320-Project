@@ -35,6 +35,7 @@ protected:
 
 public:	
 	// Called every frame
+	UFUNCTION(BlueprintCallable)
 	virtual void Tick(float DeltaTime) override;
 
 	int player1Score, player2Score,
