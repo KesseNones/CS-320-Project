@@ -8,6 +8,10 @@
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Engine/EngineTypes.h"
+#include "Engine/StaticMesh.h"
+
+
+
 #include "Ball.generated.h"
 
 
@@ -20,34 +24,29 @@ public:
 	// Sets default values for this actor's properties
 	ABall();
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, category = "Mesh")
-	//initialize static mesh component
-	
-		//UStaticMeshComponent* StaticMesh;
+	virtual void Tick(float DeltaTime) override;
 
 	//ball component
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 	UStaticMeshComponent* ballMesh;
 
 	UPROPERTY(VisibleAnywhere, Category = "Collision")
-		class USphereComponent* CollisionSphere;
+	USphereComponent* CollisionSphere;
 
-	UPROPERTY(EditAnywhere)
-		float Speed = 500.0f;
+	
 
 	UPROPERTY(EditAnywhere)
 		float BounceFactor = 1.2f;
 
 	FVector Velocity;
+	float Speed = 100.0f;
+	float maxSpeed = 1000.0f;
+	// Define a variable to store the result of the line trace
+	FHitResult TraceResult;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 	
 
 };
