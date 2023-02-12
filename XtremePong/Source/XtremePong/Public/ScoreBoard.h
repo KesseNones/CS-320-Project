@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//10 Feb, 2023
+//11 Feb, 2023
 //XtremePong
 
 #pragma once
@@ -28,6 +28,9 @@ private:
 	std::string scoreText;
 	UPROPERTY(VisibleAnywhere)
 	UTextRenderComponent* scoreModel;
+
+	UPROPERTY(VisibleAnywhere)
+	unsigned frameCount; //SORT OF TEST
 
 protected:
 	// Called when the game starts or when spawned
