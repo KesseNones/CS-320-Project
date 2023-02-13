@@ -2,12 +2,24 @@
 
 
 #include "RightPaddlePawn.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Components/BoxComponent.h"
 
 // Sets default values
 ARightPaddlePawn::ARightPaddlePawn()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	// Make root component a box that reacts to physics
+	UBoxComponent* BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("RootComponent"));
+	RootComponent = BoxComponent;
+	BoxComponent->InitBoxExtent(FVector(200.0f, 900.0f, 900.0f));
+	BoxComponent->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+
+	// Create instance of movement component and tell it to update the root
+	PaddleMovementComponent = CreateDefaultSubobject<UPaddleMovementComponent>(TEXT("PaddleMovementComponent"));
+	PaddleMovementComponent->UpdatedComponent = RootComponent;
 
 }
 
@@ -23,11 +35,6 @@ void ARightPaddlePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Update position of paddle based on current velocity
-	if (!CurrentVelocity.IsZero()) {
-		FVector NewLocation = GetActorLocation() + (CurrentVelocity * DeltaTime);
-		SetActorLocation(NewLocation);
-	}
 }
 
 // Called to bind functionality to input
@@ -39,5 +46,13 @@ void ARightPaddlePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 
 // Set current velocity of paddle
 void ARightPaddlePawn::SendRightPaddleMove(float Value) {
-	CurrentVelocity.Y = FMath::Clamp(Value, -1.0f, 1.0f) * velocityMultiplier;
+
+	// Gives the movement component a vector to act upon
+	if (PaddleMovementComponent && (PaddleMovementComponent->UpdatedComponent == RootComponent)) {
+		PaddleMovementComponent->AddInputVector(GetActorRightVector() * Value);
+	}
+}
+
+UPawnMovementComponent* ARightPaddlePawn::GetMovementComponent() const {
+	return PaddleMovementComponent;
 }

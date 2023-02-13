@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "PaddleMovementComponent.h"
 #include "PaddleControlInterface.h"
 #include "RightPaddlePawn.generated.h"
 
@@ -27,11 +28,14 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// Moves right paddle based on input received from left paddle
 	virtual void SendRightPaddleMove(float Value) override;
 
-	FVector CurrentVelocity;
+	// Override GetMovementComponent to so other classes can access the paddles' custom PaddleMovementComponent
+	virtual UPawnMovementComponent* GetMovementComponent() const override;
 
-	UPROPERTY(EditAnywhere)
-		float velocityMultiplier = 500.0f;
+	// Makes component visible in editor
+	UPROPERTY(VisibleAnywhere)
+		class UPaddleMovementComponent* PaddleMovementComponent;
 
 };

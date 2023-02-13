@@ -2,6 +2,8 @@
 
 
 #include "LeftPaddlePawn.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Components/BoxComponent.h"
 
 // Sets default values
 ALeftPaddlePawn::ALeftPaddlePawn()
@@ -10,6 +12,16 @@ ALeftPaddlePawn::ALeftPaddlePawn()
 	PrimaryActorTick.bCanEverTick = true;
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
+
+	// Make root component a box that reacts to physics
+	UBoxComponent* BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("RootComponent"));
+	RootComponent = BoxComponent;
+	BoxComponent->InitBoxExtent(FVector(200.0f, 900.0f, 900.0f));	// Set bounds of box
+	BoxComponent->SetCollisionProfileName(TEXT("BlockAllDynamic")); // Box can move (dynamic), and collides with everything
+
+	// Create instance of movement component and tell it to update the root
+	PaddleMovementComponent = CreateDefaultSubobject<UPaddleMovementComponent>(TEXT("PaddleMovementComponent"));
+	PaddleMovementComponent->UpdatedComponent = RootComponent;
 }
 
 // Called when the game starts or when spawned
@@ -24,11 +36,6 @@ void ALeftPaddlePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Set position of left paddle based on current velocity
-	if (!CurrentVelocity.IsZero()) {
-		FVector NewLocation = GetActorLocation() + (CurrentVelocity * DeltaTime);
-		SetActorLocation(NewLocation);
-	}
 }
 
 // Called to bind functionality to input
@@ -36,14 +43,18 @@ void ALeftPaddlePawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// Bind inputs to move methods
+	// Bind inputs to move functions
 	InputComponent->BindAxis("LeftPaddleMove", this, &ALeftPaddlePawn::LeftPaddleMove);
 	InputComponent->BindAxis("RightPaddleMove", this, &ALeftPaddlePawn::SendRightPaddleMove);
 }
 
-// Set current velocity of the left paddle
+
 void ALeftPaddlePawn::LeftPaddleMove(float AxisValue) {
-	CurrentVelocity.Y = FMath::Clamp(AxisValue, -1.0f, 1.0f) * velocityMultiplier;
+
+	// Gives the movement component a vector to act upon
+	if (PaddleMovementComponent && (PaddleMovementComponent->UpdatedComponent == RootComponent)) {
+		PaddleMovementComponent->AddInputVector(GetActorRightVector() * AxisValue);
+	}
 }
 
 // Send input to the right paddle
@@ -53,4 +64,8 @@ void ALeftPaddlePawn::SendRightPaddleMove(float Value) {
 	for (ARightPaddlePawn* RightPaddle : RightPaddlePawns) {
 		RightPaddle->SendRightPaddleMove(Value);
 	}
+}
+
+UPawnMovementComponent* ALeftPaddlePawn::GetMovementComponent() const {
+	return PaddleMovementComponent;
 }
