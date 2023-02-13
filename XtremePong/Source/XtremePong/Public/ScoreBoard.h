@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//11 Feb, 2023
+//12 Feb, 2023
 //XtremePong
 
 #pragma once
@@ -29,8 +29,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UTextRenderComponent* scoreModel;
 
-	UPROPERTY(VisibleAnywhere)
-	unsigned frameCount; //SORT OF TEST
 
 protected:
 	// Called when the game starts or when spawned
@@ -44,6 +42,9 @@ public:
 	int player1Score, player2Score,
 		gameRound, roundWinCount, maxRoundCount;
 
+	UPROPERTY(VisibleAnywhere)
+	unsigned frameCount; //SORT OF TEST
+	
 	//Increases the score of a given player by 1.
 	void incrementPlayerScore(bool isPlayerOne);
 		

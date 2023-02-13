@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//11 Feb, 2023
+//12 Feb, 2023
 //XtremePong
 
 #include "ScoreBoard.h"
@@ -43,13 +43,20 @@ void AScoreBoard::Tick(float DeltaTime)
 	frameCount++;
 
 	//TEST
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, 
-		FString::Printf(TEXT("%d"), frameCount)); //TEST
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, 
+	// 	FString::Printf(TEXT("%d"), frameCount)); //TEST
 	//TEST
 	//Every second or so, the score is updated on player 1, 
 	// a win is checked for, and the visuals of the scoreboard are updated.
 	if (frameCount % 60 == 0){
 		incrementPlayerScore(false);
+		isWin();
+		updateScoreboard();
+	}
+
+	//Updates player 1.
+	if (frameCount % 90 == 0){
+		incrementPlayerScore(true);
 		isWin();
 		updateScoreboard();
 	}
@@ -94,6 +101,8 @@ void AScoreBoard::updateScoreboard() {
 	scoreText = "Round: " + to_string(gameRound + 1) + "\n"
 		+ "Player 1: " + to_string(player1Score) + "\n" +
 		"Player 2: " + to_string(player2Score);
+
+	//scoreText = "Player 1: " + to_string(player1Score) + "     Round: " + to_string(gameRound) + "     " + "Player 2: " + to_string(player2Score); //DELETE LATER???
 
 	//Spawns score representation 
 	// in the world if it doesn't exist yet.
