@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//12 Feb, 2023
+//13 Feb, 2023
 //XtremePong
 
 #include "ScoreBoard.h"
@@ -133,4 +133,8 @@ void AScoreBoard::updateScoreboard() {
 		//Updates scoreboard text to new one.
 		scoreModel->SetText(FText::FromString(scoreText.c_str()));
 	}
+}
+
+void AScoreBoard::ballHit(AActor::Ball *ball){
+	//GET BALL COORDINATES
 }

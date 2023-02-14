@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//12 Feb, 2023
+//13 Feb, 2023
 //XtremePong
 
 #pragma once
@@ -20,10 +20,6 @@ private:
 	// Sets default values for this actor's properties
 	AScoreBoard();
 
-	//Visual component created.
-	// UPROPERTY(VisibleAnywhere)
-	// UStaticMeshComponent *VisualMesh; //DELETE LATER??
-
 	//Members used to display the score.
 	std::string scoreText;
 	UPROPERTY(VisibleAnywhere)
@@ -38,6 +34,9 @@ public:
 	// Called every frame
 	UFUNCTION(BlueprintCallable)
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable)
+	void ballHit();
 
 	int player1Score, player2Score,
 		gameRound, roundWinCount, maxRoundCount;
