@@ -1,25 +1,25 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Replays.h"
+#include "ReplayGameInstance.h"
 
-UReplays::UReplays()
+UReplayGameInstance::UReplayGameInstance()
 {
 	replayName = "basicReplay";
 	freplayName = "basicReplay2";
 }
 
-void UReplays::startRecord()
+void UReplayGameInstance::startRecord()
 {
 	StartRecordingReplay(replayName, freplayName);
 }
 
-void UReplays::stopRecord()
+void UReplayGameInstance::stopRecord()
 {
 	StopRecordingReplay();
 }
 
-void UReplays::startReplay()
+void UReplayGameInstance::startReplay()
 {
 	PlayReplay(replayName, nullptr);
 }

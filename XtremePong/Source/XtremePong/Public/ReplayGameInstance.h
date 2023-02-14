@@ -4,21 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-#include "Replays.generated.h"
+#include "ReplayGameInstance.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
-class XTREMEPONG_API UReplays : public UGameInstance
+class XTREMEPONG_API UReplayGameInstance : public UGameInstance
 {
 	GENERATED_BODY()
 
 public:
 
-	UReplays();
+	UReplayGameInstance();
 
-	UPROPERTY(EditDefaultsOnly, Category = "XtremePong")
+		UPROPERTY(EditDefaultsOnly, Category = "XtremePong")
 		FString replayName;
 
 	UPROPERTY(EditDefaultsOnly, Category = "XtremePong")
@@ -29,7 +29,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "XtremePong")
 		void stopRecord();
-	
+
 	UFUNCTION(BlueprintCallable, Category = "XtremePong")
 		void startReplay();
 
