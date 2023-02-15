@@ -135,6 +135,6 @@ void AScoreBoard::updateScoreboard() {
 	}
 }
 
-void AScoreBoard::ballHit(AActor::Ball *ball){
+void AScoreBoard::ballHit(){
 	//GET BALL COORDINATES
 }
