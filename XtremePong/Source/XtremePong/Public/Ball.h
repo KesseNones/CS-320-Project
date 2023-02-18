@@ -9,8 +9,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Engine/EngineTypes.h"
 #include "Engine/StaticMesh.h"
-
-
+#include "Kismet/KismetMathLibrary.h"
 
 #include "Ball.generated.h"
 
@@ -32,17 +31,15 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Collision")
 	USphereComponent* CollisionSphere;
-
+	UPROPERTY(EditAnywhere, Category = "BallSize")
+		float BallSize = 10.0f;
 	
 
 	UPROPERTY(EditAnywhere)
 		float BounceFactor = 1.2f;
 
 	FVector Velocity;
-	float Speed = 100.0f;
-	float maxSpeed = 1000.0f;
-	// Define a variable to store the result of the line trace
-	FHitResult TraceResult;
+	float Speed = 1000.0f;
 
 protected:
 	// Called when the game starts or when spawned
