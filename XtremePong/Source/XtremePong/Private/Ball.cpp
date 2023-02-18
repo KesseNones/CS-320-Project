@@ -72,6 +72,7 @@ void ABall::Tick(float DeltaTime)
 
 	FVector surface_normal = TraceResult.ImpactNormal;
 	FVector Reflection = UKismetMathLibrary::GetReflectionVector(Velocity, surface_normal);
+
 	//Check if the line trace hit an Actor
 	if (bDidHit) {
 
