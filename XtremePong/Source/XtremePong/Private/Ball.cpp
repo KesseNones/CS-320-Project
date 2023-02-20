@@ -41,7 +41,7 @@ void ABall::BeginPlay()
 	Super::BeginPlay();
 
 	//This is the initial velocity
-	Velocity = FVector(Speed, Speed, 0.0f);
+	Velocity = FVector(Speed, 0.0f, 0.0f);
 
 }
 

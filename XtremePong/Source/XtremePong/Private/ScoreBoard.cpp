@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//13 Feb, 2023
+//19 Feb, 2023
 //XtremePong
 
 #include "ScoreBoard.h"
@@ -48,18 +48,18 @@ void AScoreBoard::Tick(float DeltaTime)
 	//TEST
 	//Every second or so, the score is updated on player 1, 
 	// a win is checked for, and the visuals of the scoreboard are updated.
-	if (frameCount % 60 == 0){
-		incrementPlayerScore(false);
-		isWin();
-		updateScoreboard();
-	}
+	// if (frameCount % 60 == 0){
+	// 	incrementPlayerScore(false);
+	// 	isWin();
+	// 	updateScoreboard();
+	// }
 
-	//Updates player 1.
-	if (frameCount % 90 == 0){
-		incrementPlayerScore(true);
-		isWin();
-		updateScoreboard();
-	}
+	// //Updates player 1.
+	// if (frameCount % 90 == 0){
+	// 	incrementPlayerScore(true);
+	// 	isWin();
+	// 	updateScoreboard();
+	// }
 
 }
 
@@ -136,5 +136,6 @@ void AScoreBoard::updateScoreboard() {
 }
 
 void AScoreBoard::ballHit(){
-	//GET BALL COORDINATES
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, 
+		FString::Printf(TEXT("%s"), "COCK AND BALL TORTURE")); 
 }

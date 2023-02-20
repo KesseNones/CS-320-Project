@@ -39,7 +39,7 @@ public:
 		float BounceFactor = 1.2f;
 
 	FVector Velocity;
-	float Speed = 1000.0f;
+	float Speed = 5000.0f;
 
 protected:
 	// Called when the game starts or when spawned
