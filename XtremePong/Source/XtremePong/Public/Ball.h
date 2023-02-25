@@ -36,10 +36,19 @@ public:
 	
 
 	UPROPERTY(EditAnywhere)
-		float BounceFactor = 1.2f;
+		float BounceFactor = 1.1f;
 
 	FVector Velocity;
-	float Speed = 1000.0f;
+	float Speed = 800.0f;
+
+
+	FVector Reflection;
+	FVector surface_normal;
+	bool bDidHit;
+	FHitResult TraceResult;
+	// Define the parameters of the line trace
+	FCollisionQueryParams TraceParams;
+
 
 protected:
 	// Called when the game starts or when spawned

@@ -60,25 +60,21 @@ void ABall::Tick(float DeltaTime)
 	SetActorLocation(NewLocation);
 
 	// Define the origin and direction of the line trace
-	FVector TraceStart = GetActorLocation();
-	FVector TraceEnd = TraceStart + Velocity * DeltaTime*5;
+	FVector TraceEnd = GetActorLocation() + Velocity * DeltaTime * 5;
 
-	// Define the parameters of the line trace
-	FCollisionQueryParams TraceParams;
 	TraceParams.AddIgnoredActor(this);
 	// Perform the line trace
-	FHitResult TraceResult;
-	bool bDidHit = GetWorld()->LineTraceSingleByChannel(TraceResult, TraceStart, TraceEnd, ECC_Visibility, TraceParams);
 
-	FVector surface_normal = TraceResult.ImpactNormal;
-	FVector Reflection = UKismetMathLibrary::GetReflectionVector(Velocity, surface_normal);
+	bDidHit = GetWorld()->LineTraceSingleByChannel(TraceResult, GetActorLocation(), TraceEnd, ECC_Visibility, TraceParams);
+
+	surface_normal = TraceResult.ImpactNormal;
+	Reflection = UKismetMathLibrary::GetReflectionVector(Velocity, surface_normal);
 
 	//Check if the line trace hit an Actor
 	if (bDidHit) {
-
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("(%f,%f)"), Velocity.X, Velocity.Y));
 		Reflection.Z = Velocity.Z; //Z doesn't change since we're in 2D only
 		Velocity = Reflection;
 	}
-		
 }
 
