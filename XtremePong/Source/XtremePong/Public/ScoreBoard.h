@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//19 Feb, 2023
+//25 Feb, 2023
 //XtremePong
 
 #pragma once
@@ -11,6 +11,8 @@
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 #include "ScoreBoard.generated.h"
+
+using namespace std;
 
 UCLASS()
 class XTREMEPONG_API AScoreBoard : public AActor{
@@ -25,7 +27,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UTextRenderComponent* scoreModel;
 
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -34,9 +35,6 @@ public:
 	// Called every frame
 	UFUNCTION(BlueprintCallable)
 	virtual void Tick(float DeltaTime) override;
-
-	UFUNCTION(BlueprintCallable)
-	void ballHit();
 
 	int player1Score, player2Score,
 		gameRound, roundWinCount, maxRoundCount;
@@ -54,7 +52,19 @@ public:
 	// If maxRoundCount rounds have occured, the game is over.
 	void resetScoreToNewRound();
 
+	//Updates passed in score string or creates 
+	// a score string based on custom text and returns it.
+	string updateScoreText(string customString);
+
 	//Updates the visual component of the scoreboard.
-	void updateScoreboard();
+	void updateScoreboard(string scoreStr);
+
+	//This function is called by an overlap event when player1 scores.
+	UFUNCTION(BlueprintCallable)
+	void scoreForPlayer1();
+
+	//Called when player2 scores a goal.
+	UFUNCTION(BlueprintCallable)
+	void scoreForPlayer2();
 
 };

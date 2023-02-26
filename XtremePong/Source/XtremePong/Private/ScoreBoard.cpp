@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//19 Feb, 2023
+//25 Feb, 2023
 //XtremePong
 
 #include "ScoreBoard.h"
@@ -7,6 +7,7 @@
 using namespace std;
 
 //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%s"), debugString.c_str())); //SYNTAX FOR PRINTING DEBUG MESSAGES FOR DEV!!!
+// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), frameCount));
 //CREDIT: https://dev.epicgames.com/community/snippets/JvB/unreal-engine-c-print-string
 
 // Sets default values
@@ -23,9 +24,12 @@ AScoreBoard::AScoreBoard()
 	maxRoundCount = 3;
 	frameCount = 0; //SORT OF TEST
 
+	//Creates initial score text.
+	scoreText = updateScoreText("");
+
+	//Displays score text in model.
 	scoreModel = nullptr;
-	//Displays initial gamestate.
-	updateScoreboard();
+	updateScoreboard(scoreText);
 }
 
 // Called when the game starts or when spawned
@@ -41,25 +45,6 @@ void AScoreBoard::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	frameCount++;
-
-	//TEST
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, 
-	// 	FString::Printf(TEXT("%d"), frameCount)); //TEST
-	//TEST
-	//Every second or so, the score is updated on player 1, 
-	// a win is checked for, and the visuals of the scoreboard are updated.
-	// if (frameCount % 60 == 0){
-	// 	incrementPlayerScore(false);
-	// 	isWin();
-	// 	updateScoreboard();
-	// }
-
-	// //Updates player 1.
-	// if (frameCount % 90 == 0){
-	// 	incrementPlayerScore(true);
-	// 	isWin();
-	// 	updateScoreboard();
-	// }
 
 }
 
@@ -96,13 +81,24 @@ void AScoreBoard::resetScoreToNewRound() {
 	}
 }
 
-void AScoreBoard::updateScoreboard() {
-	//Generates string representation of scoreboard.
-	scoreText = "Round: " + to_string(gameRound + 1) + "\n"
-		+ "Player 1: " + to_string(player1Score) + "\n" +
-		"Player 2: " + to_string(player2Score);
+string AScoreBoard::updateScoreText(string customString){
+	string score;
 
-	//scoreText = "Player 1: " + to_string(player1Score) + "     Round: " + to_string(gameRound) + "     " + "Player 2: " + to_string(player2Score); //DELETE LATER???
+	//Creates standard score string if custom string is empty, 
+	// otherwise string is set to custom string.
+	if (customString.empty()){
+		//Generates string representation of scoreboard.
+		score = "Round: " + to_string(gameRound + 1) + "\n"
+			+ "Player 1: " + to_string(player1Score) + "\n" +
+			"Player 2: " + to_string(player2Score);
+	}else{
+		score = customString;
+	}
+
+	return score;
+}
+
+void AScoreBoard::updateScoreboard(string scoreStr) {
 
 	//Spawns score representation 
 	// in the world if it doesn't exist yet.
@@ -112,30 +108,38 @@ void AScoreBoard::updateScoreboard() {
 
 		//Sets position and rotation on board.
 		scoreModel->SetRelativeLocation(FVector(0.0f, 0.0f, 0.0f));
-		scoreModel->SetRelativeRotation(FRotator(-90.0f, 90.0f, 0.0f));
+		scoreModel->SetRelativeRotation(FRotator(90.0f, 90.0f, 0.0f));
 
 		//Scales letters to appropriate dimensions.
 		scoreModel->SetXScale(1.0f);
 		scoreModel->SetYScale(1.0f);
-		scoreModel->SetWorldSize(5000.0f);
+		scoreModel->SetWorldSize(1000.0f);
 
 		//Sets alignment and hooks component 
 		// to root to make it part of the level.
 		scoreModel->SetHorizontalAlignment(EHTA_Center);
 		scoreModel->SetVerticalAlignment(EVerticalTextAligment::EVRTA_TextCenter);
-		scoreModel->SetTextRenderColor(FColor::White);
+		scoreModel->SetTextRenderColor(FColor::Black);
 		scoreModel->SetupAttachment(RootComponent);
 
 		//Sets text display.
-		scoreModel->SetText(FText::FromString(scoreText.c_str()));
+		scoreModel->SetText(FText::FromString(scoreStr.c_str()));
 	}
 	else {
 		//Updates scoreboard text to new one.
-		scoreModel->SetText(FText::FromString(scoreText.c_str()));
+		scoreModel->SetText(FText::FromString(scoreStr.c_str()));
 	}
+
 }
 
-void AScoreBoard::ballHit(){
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, 
-		FString::Printf(TEXT("%s"), "COCK AND BALL TORTURE")); 
+void AScoreBoard::scoreForPlayer1(){
+	incrementPlayerScore(true);
+	scoreText = updateScoreText("");
+	updateScoreboard(scoreText);
+}
+
+void AScoreBoard::scoreForPlayer2(){
+	incrementPlayerScore(false);
+	scoreText = updateScoreText("");
+	updateScoreboard(scoreText);
 }
