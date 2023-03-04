@@ -11,8 +11,10 @@
 #include "Engine/StaticMesh.h"
 #include "Kismet/KismetMathLibrary.h"
 
-#include "Ball.generated.h"
+#include "LeftPaddlePawn.h"
+#include "RightPaddlePawn.h"
 
+#include "Ball.generated.h"
 
 UCLASS()
 class XTREMEPONG_API ABall : public AActor
@@ -23,6 +25,8 @@ public:
 	// Sets default values for this actor's properties
 	ABall();
 
+	
+
 	virtual void Tick(float DeltaTime) override;
 
 	//ball component
@@ -31,24 +35,33 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = "Collision")
 	USphereComponent* CollisionSphere;
+
+
+	/*	Velocity Variables */
 	UPROPERTY(EditAnywhere, Category = "BallSize")
 		float BallSize = 10.0f;
-	
-
 	UPROPERTY(EditAnywhere)
 		float BounceFactor = 1.1f;
 
-	FVector Velocity;
-	float Speed = 800.0f;
-
-
 	FVector Reflection;
 	FVector surface_normal;
+	FVector Velocity;
+	float Speed = 7000.0f;
+	FVector prev = FVector(0.0f, 0.0f, 0.0f);
+	FVector test_Velocity;
+
 	bool bDidHit;
 	FHitResult TraceResult;
-	// Define the parameters of the line trace
 	FCollisionQueryParams TraceParams;
 
+	/*	Other Actor Variables */
+	FString LeftPaddle = "LeftPaddlePawn_2";	
+	FString RightPaddle = "RightPaddlePawn_2";
+	//AActor* paddleActor;							//Storing the information of the actor that was hit
+	FString otherActorName;						//Storing the name of the actor hit by the ball
+
+private:
+	FVector onPaddleHit(FVector Reflection, AActor* otherActor);
 
 protected:
 	// Called when the game starts or when spawned

@@ -11,13 +11,14 @@ ABall::ABall()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
-	//CollisionSphere->SetupAttachment(RootComponent);
+
 	RootComponent = CollisionSphere;
 
 	CollisionSphere->SetSimulatePhysics(true);
 	CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	CollisionSphere->SetSphereRadius(BallSize);
 	CollisionSphere->SetEnableGravity(false);
+	CollisionSphere->SetMassOverrideInKg(NAME_None, 30.0f, true);
 
 	CollisionSphere->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 
@@ -29,7 +30,7 @@ ABall::ABall()
 	static ConstructorHelpers::FObjectFinder<UMaterial> SphereMaterial(TEXT("Material'/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial'"));
 
 	if (SphereMesh.Succeeded()) texture->SetStaticMesh(SphereMesh.Object);
-	if (SphereMaterial.Succeeded()) texture->SetMaterial(0, SphereMaterial.Object);
+	//if (SphereMaterial.Succeeded()) texture->SetMaterial(0, SphereMaterial.Object);
 
 	texture->SetWorldScale3D(FVector(0.2f));
 	
@@ -41,7 +42,8 @@ void ABall::BeginPlay()
 	Super::BeginPlay();
 
 	//This is the initial velocity
-	Velocity = FVector(Speed, Speed, 0.0f);
+	Velocity = FVector(Speed, 0.0f, 0.0f);
+	
 
 }
 
@@ -49,6 +51,8 @@ void ABall::BeginPlay()
 void ABall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	FVector TraceEnd;
+
 
 	/*
 		This section sets ball vector direction at a constant speed per tick
@@ -59,9 +63,8 @@ void ABall::Tick(float DeltaTime)
 
 	SetActorLocation(NewLocation);
 
-	// Define the origin and direction of the line trace
-	FVector TraceEnd = GetActorLocation() + Velocity * DeltaTime * 5;
-
+	TraceEnd = GetActorLocation() + Velocity * DeltaTime * 5;
+	
 	TraceParams.AddIgnoredActor(this);
 	// Perform the line trace
 
@@ -72,9 +75,32 @@ void ABall::Tick(float DeltaTime)
 
 	//Check if the line trace hit an Actor
 	if (bDidHit) {
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("(%f,%f)"), Velocity.X, Velocity.Y));
+		AActor* paddleActor = TraceResult.GetActor();
+
 		Reflection.Z = Velocity.Z; //Z doesn't change since we're in 2D only
-		Velocity = Reflection;
+		
+		otherActorName = paddleActor->GetName();
+
+		if ((*otherActorName == LeftPaddle) || (*otherActorName == RightPaddle)) 
+			Velocity = onPaddleHit(Reflection,paddleActor);
+		else
+			Velocity = Reflection; //Bouncing off any actor that's not the
 	}
 }
 
+FVector ABall::onPaddleHit(FVector curr_reflect, AActor* paddleActor)
+{
+	APawn* paddle = (APawn*) paddleActor;
+	FVector paddle_vector = paddle->GetLastMovementInputVector();
+
+	//get the random float to hit at a random angle back
+	float random_angle_hit = UKismetMathLibrary::RandomFloatInRange(1000.0f, 4000.0f);
+
+	//adjust the angle of the vector in respect to Y
+	FVector newVector;
+	newVector.X = curr_reflect.X;
+	newVector.Y = curr_reflect.Y + (paddle_vector.Y * random_angle_hit);
+	newVector.Z = curr_reflect.Z; 
+
+	return newVector;
+}
