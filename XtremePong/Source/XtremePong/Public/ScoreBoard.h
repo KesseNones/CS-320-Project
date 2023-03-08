@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//25 Feb, 2023
+//7 Mar, 2023
 //XtremePong
 
 #pragma once
@@ -19,8 +19,6 @@ class XTREMEPONG_API AScoreBoard : public AActor{
 	GENERATED_BODY()
 
 private:	
-	// Sets default values for this actor's properties
-	AScoreBoard();
 
 	//Members used to display the score.
 	std::string scoreText;
@@ -32,6 +30,9 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+	// Sets default values for this actor's properties
+	AScoreBoard();
+	
 	// Called every frame
 	UFUNCTION(BlueprintCallable)
 	virtual void Tick(float DeltaTime) override;
