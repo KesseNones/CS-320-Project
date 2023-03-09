@@ -40,14 +40,15 @@ public:
 	int player1Score, player2Score,
 		gameRound, roundWinCount, maxRoundCount;
 
-	UPROPERTY(VisibleAnywhere)
-	unsigned frameCount; //SORT OF TEST
+	//UPROPERTY(VisibleAnywhere) //DELETE LATER??????
+	//unsigned frameCount;
 	
 	//Increases the score of a given player by 1.
 	void incrementPlayerScore(bool isPlayerOne);
 		
 	//Checks if a given player has won a round/game.
-	void isWin(); //ADD PARTICLE GENERATION LATER!
+	//Returns 1 for player 1 win, 2 for player 2 win, and 0 for no wins.
+	int isWin(); //ADD PARTICLE GENERATION LATER!
 
 	//Resets player scores and increments to new round.
 	// If maxRoundCount rounds have occured, the game is over.

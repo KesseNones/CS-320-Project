@@ -22,7 +22,7 @@ AScoreBoard::AScoreBoard()
 
 	roundWinCount = 10;
 	maxRoundCount = 3;
-	frameCount = 0; //SORT OF TEST
+	//frameCount = 0; //DELETE LATER????
 
 	//Creates initial score text.
 	scoreText = updateScoreText("");
@@ -44,7 +44,7 @@ void AScoreBoard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	frameCount++;
+	//frameCount++; DELETE LATER????
 
 }
 
@@ -57,16 +57,22 @@ void AScoreBoard::incrementPlayerScore(bool isPlayerOne) {
 	}
 }
 
-void AScoreBoard::isWin() {
+int AScoreBoard::isWin() {
+	//Player 1 round/game victory case.
 	if (player1Score >= roundWinCount) {
 		//DISPLAY PLAYER 1 VICTORY
 		resetScoreToNewRound();
+		return 1;
 	}
 
+	//Player 2 round/game victory case.
 	if (player2Score >= roundWinCount) {
 		//DISPLAY PLAYER 2 VICTORY
 		resetScoreToNewRound();
+		return 2;
 	}
+
+	return 0;
 }
 
 void AScoreBoard::resetScoreToNewRound() {
