@@ -1,14 +1,18 @@
 //Jesse A. Jones
-//8 Mar, 2023
+//9 Mar, 2023
 //Unit Tests
 
 #include "ScoreBoard.h"
 #include "Tests/AutomationCommon.h"
+#include <string>
 
 using namespace std;
 
+//INTEGRATION TEST(S) STILL NEEDED!!!!!!!!!!!!!!!!!!!!!!!!
+
 #if WITH_DEV_AUTOMATION_TESTS
 
+//#1
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FScoreIncrem1, "Test Player 1 Incrementation", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -24,9 +28,13 @@ bool FScoreIncrem1::RunTest(FString const& Parameters){
 	result = scoreTest->player1Score == 1;
 	TestTrue("CHECKS PLR 1 SCORE", result);
 
+	//Gets rid of instantiated scoreboard.
+	scoreTest->MarkAsGarbage();
+
 	return true;
 }
 
+//#2
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FScoreIncrem2, "Test Player 2 Incrementation", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -42,13 +50,19 @@ bool FScoreIncrem2::RunTest(FString const& Parameters){
 	result = scoreTest->player2Score == 1;
 	TestTrue("CHECKS PLR 2 SCORE", result);
 
+	//Gets rid of instantiated scoreboard.
+	scoreTest->MarkAsGarbage();
+
 	return true;
 }
 
+//#3
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinDetect1, "Test Player 1 Win", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 //Test player 1 win detection.
+//This is a white box test exploring the player 1 
+// win detection branch of the isWin method.
 bool FWinDetect1::RunTest(FString const& Parameters){
 	bool result;
 	int retVal;
@@ -64,13 +78,19 @@ bool FWinDetect1::RunTest(FString const& Parameters){
 	result = retVal == 1;
 	TestTrue("CHECKS PLR 1 WIN", result);
 
+	//Gets rid of test scoreboard.
+	board->MarkAsGarbage();
+
 	return true;
 }
 
+//#4
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinDetect2, "Test Player 2 Win", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 //Test player 2 win detection.
+//This is a white box test exploring the player 2 
+// win detection branch of the isWin method.
 bool FWinDetect2::RunTest(FString const& Parameters){
 	bool result;
 	int retVal;
@@ -86,9 +106,13 @@ bool FWinDetect2::RunTest(FString const& Parameters){
 	result = retVal == 2;
 	TestTrue("CHECKS PLR 2 WIN", result);
 
+	//Gets rid of test scoreboard.
+	board->MarkAsGarbage();
+
 	return true;
 }
 
+//#5
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinDetectNoWin, "Test No Win", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -106,9 +130,13 @@ bool FWinDetectNoWin::RunTest(FString const& Parameters){
 	result = retVal == 0;
 	TestTrue("CHECKS NO WIN DETECTION", result);
 
+	//Gets rid of test scoreboard.
+	board->MarkAsGarbage();
+
 	return true;
 }
 
+//#6
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FScoreReset, "Reset Scores Test", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -126,6 +154,61 @@ bool FScoreReset::RunTest(FString const& Parameters){
 	//Tests to make sure scores actually reset.
 	result = (board->player1Score == 0) && (board->player2Score == 0);
 	TestTrue("CHECKS SCORE RESET", result);
+
+	//Gets rid of test scoreboard.
+	board->MarkAsGarbage();
+
+	return true;
+}
+
+//#7
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FScoreTextDefaultTest, "Test Default Score Text Generation", 
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+//Tests to see if score text generator actually 
+// creates default score text when no custom text is given.
+bool FScoreTextDefaultTest::RunTest(FString const& Parameters){
+	bool result;
+
+	string expectedString = "Round: 1\nPlayer 1: 0\nPlayer 2: 0";
+	string resultString;
+	
+	//Creates board, gets return value of creation of score text.
+	AScoreBoard *board = NewObject<AScoreBoard>();
+	resultString = board->updateScoreText("");
+
+	//Tests to make sure default score text is actually created.
+	result = (expectedString.compare(resultString)) == 0;
+	TestTrue("CHECKS DEFAULT SCORE TEXT CREATION", result);
+
+	//Gets rid of test scoreboard.
+	board->MarkAsGarbage();
+
+	return true;
+}
+
+//#8
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FScoreTextCustomTest, "Test Custom Score Text Generation", 
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+//Tests to see if score text generator actually 
+// creates text when a custom message is given.
+bool FScoreTextCustomTest::RunTest(FString const& Parameters){
+	bool result;
+
+	string expectedString = "THIS IS A CUSTOM STRING!\n";
+	string resultString;
+	
+	//Creates board, gets return value of creation of score text.
+	AScoreBoard *board = NewObject<AScoreBoard>();
+	resultString = board->updateScoreText("THIS IS A CUSTOM STRING!\n");
+
+	//Tests to make sure default score text is actually created.
+	result = (expectedString.compare(resultString)) == 0;
+	TestTrue("CHECKS CUSTOM SCORE TEXT CREATION", result);
+
+	//Gets rid of test scoreboard.
+	board->MarkAsGarbage();
 
 	return true;
 }
