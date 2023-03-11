@@ -26,10 +26,11 @@ bool FScoreIncrem1::RunTest(FString const& Parameters){
 
 	//Tests to make sure player1 score is now actually 1 after incrementation.
 	result = scoreTest->player1Score == 1;
-	TestTrue("CHECKS PLR 1 SCORE", result);
-
+	
 	//Gets rid of instantiated scoreboard.
 	scoreTest->MarkAsGarbage();
+	
+	TestTrue("CHECKS PLR 1 SCORE", result);
 
 	return true;
 }
@@ -48,10 +49,11 @@ bool FScoreIncrem2::RunTest(FString const& Parameters){
 
 	//Tests to make sure player2 score is now actually 1 after incrementation.
 	result = scoreTest->player2Score == 1;
-	TestTrue("CHECKS PLR 2 SCORE", result);
-
+	
 	//Gets rid of instantiated scoreboard.
 	scoreTest->MarkAsGarbage();
+	
+	TestTrue("CHECKS PLR 2 SCORE", result);
 
 	return true;
 }
@@ -76,10 +78,11 @@ bool FWinDetect1::RunTest(FString const& Parameters){
 
 	//Tests to make sure player 1 actually won the round/game.
 	result = retVal == 1;
-	TestTrue("CHECKS PLR 1 WIN", result);
-
+	
 	//Gets rid of test scoreboard.
 	board->MarkAsGarbage();
+	
+	TestTrue("CHECKS PLR 1 WIN", result);
 
 	return true;
 }
@@ -104,10 +107,11 @@ bool FWinDetect2::RunTest(FString const& Parameters){
 
 	//Tests to make sure player 1 actually won the round/game.
 	result = retVal == 2;
-	TestTrue("CHECKS PLR 2 WIN", result);
-
+	
 	//Gets rid of test scoreboard.
 	board->MarkAsGarbage();
+	
+	TestTrue("CHECKS PLR 2 WIN", result);
 
 	return true;
 }
@@ -128,10 +132,11 @@ bool FWinDetectNoWin::RunTest(FString const& Parameters){
 
 	//Tests to make sure no one won the round/game.
 	result = retVal == 0;
-	TestTrue("CHECKS NO WIN DETECTION", result);
-
+	
 	//Gets rid of test scoreboard.
 	board->MarkAsGarbage();
+	
+	TestTrue("CHECKS NO WIN DETECTION", result);
 
 	return true;
 }
@@ -153,10 +158,11 @@ bool FScoreReset::RunTest(FString const& Parameters){
 
 	//Tests to make sure scores actually reset.
 	result = (board->player1Score == 0) && (board->player2Score == 0);
-	TestTrue("CHECKS SCORE RESET", result);
-
+	
 	//Gets rid of test scoreboard.
 	board->MarkAsGarbage();
+	
+	TestTrue("CHECKS SCORE RESET", result);
 
 	return true;
 }
@@ -179,10 +185,11 @@ bool FScoreTextDefaultTest::RunTest(FString const& Parameters){
 
 	//Tests to make sure default score text is actually created.
 	result = (expectedString.compare(resultString)) == 0;
-	TestTrue("CHECKS DEFAULT SCORE TEXT CREATION", result);
-
+	
 	//Gets rid of test scoreboard.
 	board->MarkAsGarbage();
+	
+	TestTrue("CHECKS DEFAULT SCORE TEXT CREATION", result);
 
 	return true;
 }
@@ -205,10 +212,11 @@ bool FScoreTextCustomTest::RunTest(FString const& Parameters){
 
 	//Tests to make sure default score text is actually created.
 	result = (expectedString.compare(resultString)) == 0;
-	TestTrue("CHECKS CUSTOM SCORE TEXT CREATION", result);
-
+	
 	//Gets rid of test scoreboard.
 	board->MarkAsGarbage();
+
+	TestTrue("CHECKS CUSTOM SCORE TEXT CREATION", result);
 
 	return true;
 }
