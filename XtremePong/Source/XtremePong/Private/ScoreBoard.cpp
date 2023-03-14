@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//25 Feb, 2023
+//13 Mar, 2023
 //XtremePong
 
 #include "ScoreBoard.h"
@@ -9,6 +9,13 @@ using namespace std;
 //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%s"), debugString.c_str())); //SYNTAX FOR PRINTING DEBUG MESSAGES FOR DEV!!!
 // GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), frameCount));
 //CREDIT: https://dev.epicgames.com/community/snippets/JvB/unreal-engine-c-print-string
+
+//ISSUES: 
+/*
+	--Make round victory text go away after x seconds.
+	--Create tests for round victory text generation.
+	--Make ball respawn after being deleted for victory detection.
+*/
 
 // Sets default values
 AScoreBoard::AScoreBoard()
@@ -22,7 +29,6 @@ AScoreBoard::AScoreBoard()
 
 	roundWinCount = 10;
 	maxRoundCount = 3;
-	//frameCount = 0; //DELETE LATER????
 
 	//Creates initial score text.
 	scoreText = updateScoreText("");
@@ -44,8 +50,6 @@ void AScoreBoard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//frameCount++; DELETE LATER????
-
 }
 
 void AScoreBoard::incrementPlayerScore(bool isPlayerOne) {
@@ -58,17 +62,33 @@ void AScoreBoard::incrementPlayerScore(bool isPlayerOne) {
 }
 
 int AScoreBoard::isWin() {
+	string victoryString;
+
 	//Player 1 round/game victory case.
 	if (player1Score >= roundWinCount) {
-		//DISPLAY PLAYER 1 VICTORY
 		resetScoreToNewRound();
+
+		//If player1 wins a round, but the game isn't over, display player 1 victory.
+		if (gameRound < maxRoundCount){
+			victoryString = "Player 1 Wins Round " + to_string(gameRound) + "!";
+			scoreText = updateScoreText(victoryString);
+			updateScoreboard(scoreText);
+		}
+
 		return 1;
 	}
 
 	//Player 2 round/game victory case.
 	if (player2Score >= roundWinCount) {
-		//DISPLAY PLAYER 2 VICTORY
 		resetScoreToNewRound();
+
+		//If player2 wins a round, but the game isn't over, display player 2 victory.
+		if (gameRound < maxRoundCount){
+			victoryString = "Player 1 Wins Round " + to_string(gameRound) + "!";
+			scoreText = updateScoreText(victoryString);
+			updateScoreboard(scoreText);
+		}
+
 		return 2;
 	}
 
@@ -76,15 +96,16 @@ int AScoreBoard::isWin() {
 }
 
 void AScoreBoard::resetScoreToNewRound() {
+	//Enters end state if max rounds reached.
+	if (gameRound + 1 > maxRoundCount) {
+		//CHANGE LEVEL HERE LATER!
+	}
+
 	//Resets player scores and increments round.
 	player1Score = 0;
 	player2Score = 0;
 	gameRound++;
 
-	//Enters end state if max rounds reached.
-	if (gameRound > maxRoundCount) {
-		//CHANGE LEVEL HERE LATER!
-	}
 }
 
 string AScoreBoard::updateScoreText(string customString){
@@ -142,10 +163,12 @@ void AScoreBoard::scoreForPlayer1(){
 	incrementPlayerScore(true);
 	scoreText = updateScoreText("");
 	updateScoreboard(scoreText);
+	isWin();
 }
 
 void AScoreBoard::scoreForPlayer2(){
 	incrementPlayerScore(false);
 	scoreText = updateScoreText("");
 	updateScoreboard(scoreText);
+	isWin();
 }
