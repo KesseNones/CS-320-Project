@@ -1,9 +1,10 @@
 //Jesse A. Jones
-//13 Mar, 2023
+//16 Mar, 2023
 //XtremePong
 
 #include "ScoreBoard.h"
 #include <string>
+#include "Ball.h"
 using namespace std;
 
 //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%s"), debugString.c_str())); //SYNTAX FOR PRINTING DEBUG MESSAGES FOR DEV!!!
@@ -13,7 +14,6 @@ using namespace std;
 //ISSUES: 
 /*
 	--Make round victory text go away after x seconds.
-	--Create tests for round victory text generation.
 	--Make ball respawn after being deleted for victory detection.
 */
 
@@ -36,13 +36,45 @@ AScoreBoard::AScoreBoard()
 	//Displays score text in model.
 	scoreModel = nullptr;
 	updateScoreboard(scoreText);
+
+	ballCount = 0;
+
+	// FVector loc = balls[0]->GetActorLocation();
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d %d %d"), loc[0], loc[1], loc[2]));
+
+	// //FVector newLoc = FVector(0.0f, 0.0f, 20.0f);
+	// balls[0]->SetActorLocation(FVector(0.0f, 0.0f, 20.0f));
+
+	// FVector loc2 = balls[0]->GetActorLocation();
+
+	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d %d %d"), loc[0], loc[1], loc[2]));
+}
+
+string AScoreBoard::getScoreText(){
+	return scoreText;
 }
 
 // Called when the game starts or when spawned
 void AScoreBoard::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	createBall();
+}
+
+void AScoreBoard::createBall(){
+	FVector ballLoc = FVector(0.0f, 0.0f, 20.0f);
+	FRotator ballRot = FRotator(0.0f, 0.0f, 0.0f);
+
+	balls[ballCount] = GetWorld()->SpawnActor<ABall>(ballLoc, ballRot);
+	balls[ballCount]->SetActorScale3D(FVector(20.0f));
+	ballCount++;
+}
+
+void AScoreBoard::destroyBall(){
+	if (ballCount > 0){
+		GetWorld()->DestroyActor(balls[ballCount - 1]);
+		ballCount--;
+	}
 }
 
 // Called every frame
@@ -62,19 +94,19 @@ void AScoreBoard::incrementPlayerScore(bool isPlayerOne) {
 }
 
 int AScoreBoard::isWin() {
-	string victoryString;
-
 	//Player 1 round/game victory case.
 	if (player1Score >= roundWinCount) {
 		resetScoreToNewRound();
 
 		//If player1 wins a round, but the game isn't over, display player 1 victory.
+		//Otherwise display player 1 game victory if game is over.
 		if (gameRound < maxRoundCount){
-			victoryString = "Player 1 Wins Round " + to_string(gameRound) + "!";
-			scoreText = updateScoreText(victoryString);
+			scoreText = updateScoreText("Player 1 Wins Round " + to_string(gameRound) + "!");
+			updateScoreboard(scoreText);
+		}else{
+			scoreText = updateScoreText("Player 1 Wins Game!");
 			updateScoreboard(scoreText);
 		}
-
 		return 1;
 	}
 
@@ -83,29 +115,24 @@ int AScoreBoard::isWin() {
 		resetScoreToNewRound();
 
 		//If player2 wins a round, but the game isn't over, display player 2 victory.
+		//Otherwise display player 2 game victory.
 		if (gameRound < maxRoundCount){
-			victoryString = "Player 1 Wins Round " + to_string(gameRound) + "!";
-			scoreText = updateScoreText(victoryString);
+			scoreText = updateScoreText("Player 2 Wins Round " + to_string(gameRound) + "!");
+			updateScoreboard(scoreText);
+		}else{
+			scoreText = updateScoreText("Player 2 Wins Game!");
 			updateScoreboard(scoreText);
 		}
-
 		return 2;
 	}
-
 	return 0;
 }
 
 void AScoreBoard::resetScoreToNewRound() {
-	//Enters end state if max rounds reached.
-	if (gameRound + 1 > maxRoundCount) {
-		//CHANGE LEVEL HERE LATER!
-	}
-
 	//Resets player scores and increments round.
 	player1Score = 0;
 	player2Score = 0;
 	gameRound++;
-
 }
 
 string AScoreBoard::updateScoreText(string customString){
@@ -160,15 +187,19 @@ void AScoreBoard::updateScoreboard(string scoreStr) {
 }
 
 void AScoreBoard::scoreForPlayer1(){
+	destroyBall();
 	incrementPlayerScore(true);
 	scoreText = updateScoreText("");
 	updateScoreboard(scoreText);
 	isWin();
+	createBall();
 }
 
 void AScoreBoard::scoreForPlayer2(){
+	destroyBall();
 	incrementPlayerScore(false);
 	scoreText = updateScoreText("");
 	updateScoreboard(scoreText);
 	isWin();
+	createBall();
 }

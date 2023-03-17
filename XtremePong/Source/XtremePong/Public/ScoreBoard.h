@@ -1,9 +1,10 @@
 //Jesse A. Jones
-//7 Mar, 2023
+//16 Mar, 2023
 //XtremePong
 
 #pragma once
 
+#include "Ball.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/TextRenderComponent.h"
@@ -21,7 +22,7 @@ class XTREMEPONG_API AScoreBoard : public AActor{
 private:	
 
 	//Members used to display the score.
-	std::string scoreText;
+	string scoreText;
 	UPROPERTY(VisibleAnywhere)
 	UTextRenderComponent* scoreModel;
 
@@ -40,8 +41,13 @@ public:
 	int player1Score, player2Score,
 		gameRound, roundWinCount, maxRoundCount;
 
-	//UPROPERTY(VisibleAnywhere) //DELETE LATER??????
-	//unsigned frameCount;
+	//Used to track balls and the number of them on the board.
+	ABall *balls[64];
+	int ballCount;
+
+	//Returns the score text when requested. 
+	// Acts as a getter method since scoreText is private.
+	string getScoreText();
 	
 	//Increases the score of a given player by 1.
 	void incrementPlayerScore(bool isPlayerOne);
@@ -60,6 +66,13 @@ public:
 
 	//Updates the visual component of the scoreboard.
 	void updateScoreboard(string scoreStr);
+
+	//Creates a ball to be used in the game.
+	void createBall();
+
+	//Does the opposite of createBall, 
+	// getting rid of a ball actor from the game.
+	void destroyBall();
 
 	//This function is called by an overlap event when player1 scores.
 	UFUNCTION(BlueprintCallable)
