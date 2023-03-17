@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//13 Mar, 2023
+//16 Mar, 2023
 //Unit Tests
 
 #include "ScoreBoard.h"
@@ -72,7 +72,7 @@ bool FWinDetect1::RunTest(FString const& Parameters){
 	//Creates scoreboard instance, sets player 1 to winning score for round,
 	// then tests to see if a win was detected for player 1.
 	AScoreBoard *board = NewObject<AScoreBoard>();
-	board->player1Score = 10;
+	board->player1Score = board->roundWinCount;
 	board->player2Score = 0;
 	retVal = board->isWin();
 
@@ -102,7 +102,7 @@ bool FWinDetect2::RunTest(FString const& Parameters){
 	// then tests to see if a win was detected for player 2.
 	AScoreBoard *board = NewObject<AScoreBoard>();
 	board->player1Score = 0;
-	board->player2Score = 10;
+	board->player2Score = board->roundWinCount;
 	retVal = board->isWin();
 
 	//Tests to make sure player 1 actually won the round/game.
@@ -217,6 +217,124 @@ bool FScoreTextCustomTest::RunTest(FString const& Parameters){
 	board->MarkAsGarbage();
 
 	TestTrue("CHECKS CUSTOM SCORE TEXT CREATION", result);
+
+	return true;
+}
+
+//#9
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinText1, "Player 1 Round Victory Text Test", 
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+//Test player 1 win text generation from isWin.
+//This test succeeds if the score text 
+// is the correct custom player 1 victory text.
+bool FWinText1::RunTest(FString const& Parameters){
+	bool result;
+	string plr1VicStr = "Player 1 Wins Round 1!";
+	
+	//Creates scoreboard instance, sets player 1 to winning score for round,
+	// then tests to see if a win was detected for player 1.
+	AScoreBoard *board = NewObject<AScoreBoard>();
+	board->player1Score = board->roundWinCount;
+	board->player2Score = 0;
+	board->isWin();
+
+	//Tests to make sure correct victory text for scoreText was generated.
+	result = (plr1VicStr.compare(board->getScoreText())) == 0;
+	
+	//Gets rid of test scoreboard.
+	board->MarkAsGarbage();
+	
+	TestTrue("CHECKS PLR 1 WIN TEXT", result);
+
+	return true;
+}
+
+//#10
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinText2, "Player 2 Round Victory Text Test", 
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+//Test player 2 win text generation from isWin.
+//This test succeeds if the score text 
+// is the correct custom player 2 victory text.
+bool FWinText2::RunTest(FString const& Parameters){
+	bool result;
+	string plr2VicStr = "Player 2 Wins Round 1!";
+	
+	//Creates scoreboard instance, sets player 2 to winning score for round,
+	// then tests to see if a win was detected for player 2.
+	AScoreBoard *board = NewObject<AScoreBoard>();
+	board->player1Score = 0;
+	board->player2Score = board->roundWinCount;
+	board->isWin();
+
+	//Tests to make sure correct victory text for scoreText was generated.
+	result = (plr2VicStr.compare(board->getScoreText())) == 0;
+	
+	//Gets rid of test scoreboard.
+	board->MarkAsGarbage();
+	
+	TestTrue("CHECKS PLR 2 WIN TEXT", result);
+
+	return true;
+}
+
+//#11
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinGameText1, "Game Victory Text Test Player 1", 
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+//Tests if correct score text is set in scoreText 
+// for player 1 winning the game.
+bool FWinGameText1::RunTest(FString const& Parameters){
+	bool result;
+	string expectStr = "Player 1 Wins Game!";
+	
+	//Creates scoreboard, sets player 1 to winning score. 
+	// Reset happens so round moves beyond max, 
+	// ending the game with player 1 victory.
+	AScoreBoard *board = NewObject<AScoreBoard>();
+	board->player1Score = board->roundWinCount;
+	board->player2Score = 0;
+	board->gameRound = board->maxRoundCount - 1;
+	board->isWin();
+
+	//Tests to make sure correct victory text for scoreText was generated.
+	result = (expectStr.compare(board->getScoreText())) == 0;
+	
+	//Gets rid of test scoreboard.
+	board->MarkAsGarbage();
+	
+	TestTrue("CHECKS PLR 1 GAME WIN TEXT", result);
+
+	return true;
+}
+
+//#12
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinGameText2, "Game Victory Text Test Player 2", 
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+//Tests if correct score text is set in scoreText 
+// for player 2 winning the game.
+bool FWinGameText2::RunTest(FString const& Parameters){
+	bool result;
+	string expectStr = "Player 2 Wins Game!";
+	
+	//Creates scoreboard, sets player 2 to winning score. 
+	// Reset happens so round moves beyond max, 
+	// ending the game with player 2 victory.
+	AScoreBoard *board = NewObject<AScoreBoard>();
+	board->player1Score = 0;
+	board->player2Score = board->roundWinCount;
+	board->gameRound = board->maxRoundCount - 1;
+	board->isWin();
+
+	//Tests to make sure correct victory text for scoreText was generated.
+	result = (expectStr.compare(board->getScoreText())) == 0;
+	
+	//Gets rid of test scoreboard.
+	board->MarkAsGarbage();
+	
+	TestTrue("CHECKS PLR 2 GAME WIN TEXT", result);
 
 	return true;
 }
