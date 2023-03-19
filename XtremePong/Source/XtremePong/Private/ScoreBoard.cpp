@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//16 Mar, 2023
+//18 Mar, 2023
 //XtremePong
 
 #include "ScoreBoard.h"
@@ -58,14 +58,21 @@ string AScoreBoard::getScoreText(){
 void AScoreBoard::BeginPlay()
 {
 	Super::BeginPlay();
-	createBall();
+	createBall(nullptr);
 }
 
-void AScoreBoard::createBall(){
+void AScoreBoard::createBall(UWorld *World){
 	FVector ballLoc = FVector(0.0f, 0.0f, 20.0f);
 	FRotator ballRot = FRotator(0.0f, 0.0f, 0.0f);
 
-	balls[ballCount] = GetWorld()->SpawnActor<ABall>(ballLoc, ballRot);
+	//If no world is given to spawn actor in, current world will be grabbed.
+	//Otherwise, actor spawns in passed in world.
+	if (World == nullptr){
+		balls[ballCount] = GetWorld()->SpawnActor<ABall>(ballLoc, ballRot);
+	}else{
+		balls[ballCount] = World->SpawnActor<ABall>(ballLoc, ballRot);
+	}
+
 	balls[ballCount]->SetActorScale3D(FVector(20.0f));
 	ballCount++;
 }
@@ -192,7 +199,7 @@ void AScoreBoard::scoreForPlayer1(){
 	scoreText = updateScoreText("");
 	updateScoreboard(scoreText);
 	isWin();
-	createBall();
+	createBall(nullptr);
 }
 
 void AScoreBoard::scoreForPlayer2(){
@@ -201,5 +208,5 @@ void AScoreBoard::scoreForPlayer2(){
 	scoreText = updateScoreText("");
 	updateScoreboard(scoreText);
 	isWin();
-	createBall();
+	createBall(nullptr);
 }

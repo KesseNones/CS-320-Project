@@ -1,14 +1,16 @@
 //Jesse A. Jones
-//16 Mar, 2023
+//18 Mar, 2023
 //Unit Tests
 
 #include "ScoreBoard.h"
+#include "Ball.h"
 #include "Tests/AutomationCommon.h"
+
 #include <string>
 
 using namespace std;
 
-//INTEGRATION TEST(S) STILL NEEDED!!!!!!!!!!!!!!!!!!!!!!!!
+//INTEGRATION TEST(S) NEED TO WORK!!!
 
 #if WITH_DEV_AUTOMATION_TESTS
 
@@ -17,6 +19,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FScoreIncrem1, "Test Player 1 Incrementation",
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 //Tests incrementation of player 1 score.
+//acceptance test
 bool FScoreIncrem1::RunTest(FString const& Parameters){
 	bool result;
 	
@@ -40,6 +43,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FScoreIncrem2, "Test Player 2 Incrementation",
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 //Tests incrementation of player 2 score.
+//acceptance test
 bool FScoreIncrem2::RunTest(FString const& Parameters){
 	bool result;
 	
@@ -62,9 +66,46 @@ bool FScoreIncrem2::RunTest(FString const& Parameters){
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinDetect1, "Test Player 1 Win", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
-//Test player 1 win detection.
-//This is a white box test exploring the player 1 
-// win detection branch of the isWin method.
+/*	CODE BEING TESTED:
+	int AScoreBoard::isWin() {
+	//Player 1 round/game victory case.
+	if (player1Score >= roundWinCount) {
+		resetScoreToNewRound();
+
+		//If player1 wins a round, but the game isn't over, display player 1 victory.
+		//Otherwise display player 1 game victory if game is over.
+		if (gameRound < maxRoundCount){
+			scoreText = updateScoreText("Player 1 Wins Round " + to_string(gameRound) + "!");
+			updateScoreboard(scoreText);
+		}else{
+			scoreText = updateScoreText("Player 1 Wins Game!");
+			updateScoreboard(scoreText);
+		}
+		return 1;
+	}
+
+	//Player 2 round/game victory case.
+	if (player2Score >= roundWinCount) {
+		resetScoreToNewRound();
+
+		//If player2 wins a round, but the game isn't over, display player 2 victory.
+		//Otherwise display player 2 game victory.
+		if (gameRound < maxRoundCount){
+			scoreText = updateScoreText("Player 2 Wins Round " + to_string(gameRound) + "!");
+			updateScoreboard(scoreText);
+		}else{
+			scoreText = updateScoreText("Player 2 Wins Game!");
+			updateScoreboard(scoreText);
+		}
+		return 2;
+	}
+	return 0;
+}
+		This test is a whitebox test that tests the player1 victory branch 
+		in detection of victories. Along with the following test of player 2 branch,
+		full coverage is achieved. 
+
+*/
 bool FWinDetect1::RunTest(FString const& Parameters){
 	bool result;
 	int retVal;
@@ -91,9 +132,45 @@ bool FWinDetect1::RunTest(FString const& Parameters){
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinDetect2, "Test Player 2 Win", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
-//Test player 2 win detection.
-//This is a white box test exploring the player 2 
-// win detection branch of the isWin method.
+/*	CODE BEING TESTED:
+	int AScoreBoard::isWin() {
+	//Player 1 round/game victory case.
+	if (player1Score >= roundWinCount) {
+		resetScoreToNewRound();
+
+		//If player1 wins a round, but the game isn't over, display player 1 victory.
+		//Otherwise display player 1 game victory if game is over.
+		if (gameRound < maxRoundCount){
+			scoreText = updateScoreText("Player 1 Wins Round " + to_string(gameRound) + "!");
+			updateScoreboard(scoreText);
+		}else{
+			scoreText = updateScoreText("Player 1 Wins Game!");
+			updateScoreboard(scoreText);
+		}
+		return 1;
+	}
+
+	//Player 2 round/game victory case.
+	if (player2Score >= roundWinCount) {
+		resetScoreToNewRound();
+
+		//If player2 wins a round, but the game isn't over, display player 2 victory.
+		//Otherwise display player 2 game victory.
+		if (gameRound < maxRoundCount){
+			scoreText = updateScoreText("Player 2 Wins Round " + to_string(gameRound) + "!");
+			updateScoreboard(scoreText);
+		}else{
+			scoreText = updateScoreText("Player 2 Wins Game!");
+			updateScoreboard(scoreText);
+		}
+		return 2;
+	}
+	return 0;
+}
+		This test is a whitebox test that tests the player2 victory branch 
+		in detection of victories. Along with the following test of player 1 branch,
+		full coverage is achieved. 
+*/
 bool FWinDetect2::RunTest(FString const& Parameters){
 	bool result;
 	int retVal;
@@ -121,6 +198,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinDetectNoWin, "Test No Win",
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 //Tests lack of wins detected.
+//acceptance test
 bool FWinDetectNoWin::RunTest(FString const& Parameters){
 	bool result;
 	int retVal;
@@ -146,6 +224,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FScoreReset, "Reset Scores Test",
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 //Tests to see if reset scores method actually resets scores.
+//acceptance test
 bool FScoreReset::RunTest(FString const& Parameters){
 	bool result;
 	
@@ -173,6 +252,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FScoreTextDefaultTest, "Test Default Score Text
 
 //Tests to see if score text generator actually 
 // creates default score text when no custom text is given.
+//acceptance test
 bool FScoreTextDefaultTest::RunTest(FString const& Parameters){
 	bool result;
 
@@ -200,6 +280,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FScoreTextCustomTest, "Test Custom Score Text G
 
 //Tests to see if score text generator actually 
 // creates text when a custom message is given.
+//acceptance test
 bool FScoreTextCustomTest::RunTest(FString const& Parameters){
 	bool result;
 
@@ -228,6 +309,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinText1, "Player 1 Round Victory Text Test",
 //Test player 1 win text generation from isWin.
 //This test succeeds if the score text 
 // is the correct custom player 1 victory text.
+//acceptance test
 bool FWinText1::RunTest(FString const& Parameters){
 	bool result;
 	string plr1VicStr = "Player 1 Wins Round 1!";
@@ -257,6 +339,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinText2, "Player 2 Round Victory Text Test",
 //Test player 2 win text generation from isWin.
 //This test succeeds if the score text 
 // is the correct custom player 2 victory text.
+//acceptance test
 bool FWinText2::RunTest(FString const& Parameters){
 	bool result;
 	string plr2VicStr = "Player 2 Wins Round 1!";
@@ -285,6 +368,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinGameText1, "Game Victory Text Test Player 1
 
 //Tests if correct score text is set in scoreText 
 // for player 1 winning the game.
+//acceptance test
 bool FWinGameText1::RunTest(FString const& Parameters){
 	bool result;
 	string expectStr = "Player 1 Wins Game!";
@@ -315,6 +399,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinGameText2, "Game Victory Text Test Player 2
 
 //Tests if correct score text is set in scoreText 
 // for player 2 winning the game.
+//acceptance test
 bool FWinGameText2::RunTest(FString const& Parameters){
 	bool result;
 	string expectStr = "Player 2 Wins Game!";
@@ -335,6 +420,54 @@ bool FWinGameText2::RunTest(FString const& Parameters){
 	board->MarkAsGarbage();
 	
 	TestTrue("CHECKS PLR 2 GAME WIN TEXT", result);
+
+	return true;
+}
+
+//#13 BROKEN
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FBallCreationTest, "Ball Creation Test", 
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+//Tests if correct score text is set in scoreText 
+// for player 2 winning the game.
+//THIS INTEGRATION TEST PRESENTLY DOESN'T WORK.
+//THE EDITOR EATS ITSELF IF IT RUNS.
+bool FBallCreationTest::RunTest(FString const& Parameters){
+	bool result;
+	FVector expectedCoords = FVector(0.0f, 0.0f, 20.0f);
+	
+    // Get the current world
+ 	UWorld* World = NewObject<UWorld>(GetTransientPackage(), FName("TEST"));
+ 	World->WorldType = EWorldType::PIE;
+
+    if (World == nullptr){
+    	return false;
+    }
+
+    //World->LoadMap("Game/Maps/BasicLevelArena");
+
+	//Creates scoreboard that then creates a ball.
+	AScoreBoard *board = NewObject<AScoreBoard>();
+	board->createBall(World);
+
+	auto ballPtr = board->balls[board->ballCount - 1];
+
+	TestTrue("CHECKS BALL PTR IS NOT NULL", ballPtr != nullptr);
+
+	FVector ballCoords = ballPtr->GetActorLocation();
+
+	//Tests to make sure correct victory text for scoreText was generated.
+	result = 
+		(expectedCoords[0] == ballCoords[0]) && 
+		(expectedCoords[1] == ballCoords[1]) && 
+		(expectedCoords[2] == ballCoords[2]);
+	
+	//Gets rid of test scoreboard.
+	board->MarkAsGarbage();
+
+	result = true;
+	
+	TestTrue("CHECKS CORRECT BALL COORDS", result);
 
 	return true;
 }

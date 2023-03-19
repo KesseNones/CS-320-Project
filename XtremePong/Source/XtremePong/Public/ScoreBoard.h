@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//16 Mar, 2023
+//18 Mar, 2023
 //XtremePong
 
 #pragma once
@@ -68,7 +68,7 @@ public:
 	void updateScoreboard(string scoreStr);
 
 	//Creates a ball to be used in the game.
-	void createBall();
+	void createBall(UWorld *World);
 
 	//Does the opposite of createBall, 
 	// getting rid of a ball actor from the game.
