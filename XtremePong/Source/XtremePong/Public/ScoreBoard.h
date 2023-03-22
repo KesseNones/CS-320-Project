@@ -68,7 +68,7 @@ public:
 	void updateScoreboard(string scoreStr);
 
 	//Creates a ball to be used in the game.
-	void createBall(UWorld *World);
+	void createBall();
 
 	//Does the opposite of createBall, 
 	// getting rid of a ball actor from the game.

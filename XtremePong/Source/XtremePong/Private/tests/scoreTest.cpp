@@ -424,50 +424,30 @@ bool FWinGameText2::RunTest(FString const& Parameters){
 	return true;
 }
 
-//#13 BROKEN
+//#13
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FBallCreationTest, "Ball Creation Test", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 //Tests if correct score text is set in scoreText 
 // for player 2 winning the game.
-//THIS INTEGRATION TEST PRESENTLY DOESN'T WORK.
-//THE EDITOR EATS ITSELF IF IT RUNS.
 bool FBallCreationTest::RunTest(FString const& Parameters){
-	bool result;
 	FVector expectedCoords = FVector(0.0f, 0.0f, 20.0f);
-	
-    // Get the current world
- 	UWorld* World = NewObject<UWorld>(GetTransientPackage(), FName("TEST"));
- 	World->WorldType = EWorldType::PIE;
-
-    if (World == nullptr){
-    	return false;
-    }
-
-    //World->LoadMap("Game/Maps/BasicLevelArena");
 
 	//Creates scoreboard that then creates a ball.
 	AScoreBoard *board = NewObject<AScoreBoard>();
-	board->createBall(World);
+	board->createBall();
 
+	//Gets Ball's coordinates.
 	auto ballPtr = board->balls[board->ballCount - 1];
-
-	TestTrue("CHECKS BALL PTR IS NOT NULL", ballPtr != nullptr);
-
 	FVector ballCoords = ballPtr->GetActorLocation();
 
-	//Tests to make sure correct victory text for scoreText was generated.
-	result = 
-		(expectedCoords[0] == ballCoords[0]) && 
-		(expectedCoords[1] == ballCoords[1]) && 
-		(expectedCoords[2] == ballCoords[2]);
-	
 	//Gets rid of test scoreboard.
 	board->MarkAsGarbage();
-
-	result = true;
 	
-	TestTrue("CHECKS CORRECT BALL COORDS", result);
+	//Tests to make sure all coordinate axis are valid.
+	TestTrue("X == 0", (expectedCoords[0] == ballCoords[0]));
+	TestTrue("Y == 0", (expectedCoords[1] == ballCoords[1]));
+	TestTrue("Z == 20", (expectedCoords[2] == ballCoords[2]));
 
 	return true;
 }
