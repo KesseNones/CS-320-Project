@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//18 Mar, 2023
+//21 Mar, 2023
 //Unit Tests
 
 #include "ScoreBoard.h"
@@ -14,7 +14,7 @@ using namespace std;
 
 #if WITH_DEV_AUTOMATION_TESTS
 
-//#1
+//TEST #1
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FScoreIncrem1, "Test Player 1 Incrementation", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -38,7 +38,7 @@ bool FScoreIncrem1::RunTest(FString const& Parameters){
 	return true;
 }
 
-//#2
+//TEST #2
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FScoreIncrem2, "Test Player 2 Incrementation", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -62,12 +62,12 @@ bool FScoreIncrem2::RunTest(FString const& Parameters){
 	return true;
 }
 
-//#3
+//TEST #3
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinDetect1, "Test Player 1 Win", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 /*	CODE BEING TESTED:
-	int AScoreBoard::isWin() {
+int AScoreBoard::isWin() {
 	//Player 1 round/game victory case.
 	if (player1Score >= roundWinCount) {
 		resetScoreToNewRound();
@@ -101,9 +101,10 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinDetect1, "Test Player 1 Win",
 	}
 	return 0;
 }
-		This test is a whitebox test that tests the player1 victory branch 
-		in detection of victories. Along with the following test of player 2 branch,
-		full coverage is achieved. 
+		This test is a whitebox test that tests the player 1 victory branch 
+		in detection of victories, achieving 33% coverage. 
+		With the test for player 1 victory and no player victory, 
+		100% branch coverage is achieved.
 
 */
 bool FWinDetect1::RunTest(FString const& Parameters){
@@ -128,12 +129,12 @@ bool FWinDetect1::RunTest(FString const& Parameters){
 	return true;
 }
 
-//#4
+//TEST #4
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinDetect2, "Test Player 2 Win", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
 /*	CODE BEING TESTED:
-	int AScoreBoard::isWin() {
+int AScoreBoard::isWin() {
 	//Player 1 round/game victory case.
 	if (player1Score >= roundWinCount) {
 		resetScoreToNewRound();
@@ -167,9 +168,10 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinDetect2, "Test Player 2 Win",
 	}
 	return 0;
 }
-		This test is a whitebox test that tests the player2 victory branch 
-		in detection of victories. Along with the following test of player 1 branch,
-		full coverage is achieved. 
+		This test is a whitebox test that tests the player 2 victory branch 
+		in detection of victories, achieving 33% coverage. 
+		With the test for player 1 victory and no player victory, 
+		100% branch coverage is achieved.
 */
 bool FWinDetect2::RunTest(FString const& Parameters){
 	bool result;
@@ -193,12 +195,49 @@ bool FWinDetect2::RunTest(FString const& Parameters){
 	return true;
 }
 
-//#5
+//TEST #5
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinDetectNoWin, "Test No Win", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
-//Tests lack of wins detected.
-//acceptance test
+/*	CODE BEING TESTED:
+int AScoreBoard::isWin() {
+	//Player 1 round/game victory case.
+	if (player1Score >= roundWinCount) {
+		resetScoreToNewRound();
+
+		//If player1 wins a round, but the game isn't over, display player 1 victory.
+		//Otherwise display player 1 game victory if game is over.
+		if (gameRound < maxRoundCount){
+			scoreText = updateScoreText("Player 1 Wins Round " + to_string(gameRound) + "!");
+			updateScoreboard(scoreText);
+		}else{
+			scoreText = updateScoreText("Player 1 Wins Game!");
+			updateScoreboard(scoreText);
+		}
+		return 1;
+	}
+
+	//Player 2 round/game victory case.
+	if (player2Score >= roundWinCount) {
+		resetScoreToNewRound();
+
+		//If player2 wins a round, but the game isn't over, display player 2 victory.
+		//Otherwise display player 2 game victory.
+		if (gameRound < maxRoundCount){
+			scoreText = updateScoreText("Player 2 Wins Round " + to_string(gameRound) + "!");
+			updateScoreboard(scoreText);
+		}else{
+			scoreText = updateScoreText("Player 2 Wins Game!");
+			updateScoreboard(scoreText);
+		}
+		return 2;
+	}
+	return 0;
+}
+		This tests if neither player has won a given round. 
+		This test achieves 33% coverage. With the test for player 1
+		victory and player 2 victory, 100% coverage is achieved.
+*/
 bool FWinDetectNoWin::RunTest(FString const& Parameters){
 	bool result;
 	int retVal;
@@ -219,7 +258,7 @@ bool FWinDetectNoWin::RunTest(FString const& Parameters){
 	return true;
 }
 
-//#6
+//TEST #6
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FScoreReset, "Reset Scores Test", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -246,7 +285,7 @@ bool FScoreReset::RunTest(FString const& Parameters){
 	return true;
 }
 
-//#7
+//TEST #7
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FScoreTextDefaultTest, "Test Default Score Text Generation", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -274,7 +313,7 @@ bool FScoreTextDefaultTest::RunTest(FString const& Parameters){
 	return true;
 }
 
-//#8
+//TEST #8
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FScoreTextCustomTest, "Test Custom Score Text Generation", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -302,7 +341,7 @@ bool FScoreTextCustomTest::RunTest(FString const& Parameters){
 	return true;
 }
 
-//#9
+//TEST #9
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinText1, "Player 1 Round Victory Text Test", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -332,7 +371,7 @@ bool FWinText1::RunTest(FString const& Parameters){
 	return true;
 }
 
-//#10
+//TEST #10
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinText2, "Player 2 Round Victory Text Test", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -362,7 +401,7 @@ bool FWinText2::RunTest(FString const& Parameters){
 	return true;
 }
 
-//#11
+//TEST #11
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinGameText1, "Game Victory Text Test Player 1", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -393,7 +432,7 @@ bool FWinGameText1::RunTest(FString const& Parameters){
 	return true;
 }
 
-//#12
+//TEST #12
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FWinGameText2, "Game Victory Text Test Player 2", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -424,9 +463,23 @@ bool FWinGameText2::RunTest(FString const& Parameters){
 	return true;
 }
 
-//#13
+//TEST #13
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FBallCreationTest, "Ball Creation Test", 
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+/*
+	Two units are being tested in this integration test. 
+The two units inolved are the AScoreBoard class I made 
+and the ABall class made by Ben. My scoreboard's createBall method is called
+which creates an instance of Ben's ball. The location of the ball is tested
+to see if it's correct.
+
+	The overall approach of this integration test is bottom-up, 
+since it takes two relatively simple classes and connects them 
+in a bottom up fashion by linking them together 
+in the ball creaiton method.
+
+*/
 
 //Tests if correct score text is set in scoreText 
 // for player 2 winning the game.
