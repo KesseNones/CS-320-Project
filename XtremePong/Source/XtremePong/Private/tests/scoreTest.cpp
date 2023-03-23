@@ -1,6 +1,6 @@
 //Jesse A. Jones
-//21 Mar, 2023
-//Unit Tests
+//23 Mar, 2023
+//Unit Tests for ScoreBoard
 
 #include "ScoreBoard.h"
 #include "Ball.h"
@@ -10,8 +10,6 @@
 #include <string>
 
 using namespace std;
-
-//INTEGRATION TEST(S) NEED TO WORK!!!
 
 #if WITH_DEV_AUTOMATION_TESTS
 

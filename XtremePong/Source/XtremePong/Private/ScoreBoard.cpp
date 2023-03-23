@@ -1,6 +1,6 @@
 //Jesse A. Jones
-//21 Mar, 2023
-//XtremePong
+//23 Mar, 2023
+//XtremePong ScoreBoard
 
 #include "ScoreBoard.h"
 #include <string>
@@ -14,7 +14,6 @@ using namespace std;
 //ISSUES: 
 /*
 	--Make round victory text go away after x seconds.
-	--Make ball respawn after being deleted for victory detection.
 */
 
 // Sets default values
