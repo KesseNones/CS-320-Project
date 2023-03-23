@@ -42,8 +42,7 @@ void ABall::BeginPlay()
 	Super::BeginPlay();
 
 	//This is the initial velocity
-	Velocity = FVector(Speed, 0.0f, 0.0f);
-	
+	Velocity = FVector(initSpeed, 0.0f, 0.0f);
 
 }
 
@@ -60,10 +59,10 @@ void ABall::Tick(float DeltaTime)
 	
 	FVector NewLocation = GetActorLocation() + Velocity * DeltaTime;
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), DeltaTime));
-
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Your Message"));
 	SetActorLocation(NewLocation);
 
-	TraceEnd = GetActorLocation() + Velocity * DeltaTime * 5;
+	TraceEnd = GetActorLocation() + Velocity * DeltaTime * 20;
 	
 	TraceParams.AddIgnoredActor(this);
 	// Perform the line trace
@@ -75,32 +74,52 @@ void ABall::Tick(float DeltaTime)
 
 	//Check if the line trace hit an Actor
 	if (bDidHit) {
-		AActor* paddleActor = TraceResult.GetActor();
-
+		
+		paddleActor = TraceResult.GetActor();
+		
 		Reflection.Z = Velocity.Z; //Z doesn't change since we're in 2D only
 		
 		otherActorName = paddleActor->GetName();
-
-		if ((*otherActorName == LeftPaddle) || (*otherActorName == RightPaddle)) 
-			Velocity = onPaddleHit(Reflection,paddleActor);
+		
+		if ((*otherActorName == LeftPaddle) || (*otherActorName == RightPaddle))
+		{
+			APawn* paddle = (APawn*)paddleActor;
+			FVector paddle_vector = paddle->GetLastMovementInputVector();
+			Velocity = onPaddleHit(Reflection, paddle_vector, false,true);
+		}
 		else
+		{
 			Velocity = Reflection; //Bouncing off any actor that's not the
+		}
 	}
 }
 
-FVector ABall::onPaddleHit(FVector curr_reflect, AActor* paddleActor)
+FVector ABall::setBallVelocityMultiplier(FVector curr_velocity,float speedMultiplier)
 {
-	APawn* paddle = (APawn*) paddleActor;
-	FVector paddle_vector = paddle->GetLastMovementInputVector();
+	FVector newVector = curr_velocity * abs(speedMultiplier);
+	return newVector;
+}
 
-	//get the random float to hit at a random angle back
-	float random_angle_hit = UKismetMathLibrary::RandomFloatInRange(1000.0f, 4000.0f);
-
-	//adjust the angle of the vector in respect to Y
+FVector ABall::onPaddleHit(FVector curr_reflect, FVector paddle_vector, bool enableRandom, bool isIncreasingSpeed)
+{
+	FVector increaseVector = FVector(0.0f, 0.0f, 0.0f);
 	FVector newVector;
+	float random_angle_hit = 2000.0f;
+	//get the random float to hit at a random angle back
+	if (enableRandom) random_angle_hit = UKismetMathLibrary::RandomFloatInRange(1000.0f, 4000.0f);
+
 	newVector.X = curr_reflect.X;
 	newVector.Y = curr_reflect.Y + (paddle_vector.Y * random_angle_hit);
 	newVector.Z = curr_reflect.Z; 
 
+	//adjust the angle of the vector in respect to Y
+	if (isIncreasingSpeed) {
+		if (abs(curr_reflect.X) < 20000.0f)
+		{
+			increaseVector = setBallVelocityMultiplier(newVector, 1.2f);
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("New X = %f"), increaseVector.X));
+			return increaseVector;
+		}
+	}
 	return newVector;
 }

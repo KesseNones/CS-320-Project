@@ -46,13 +46,14 @@ public:
 	FVector Reflection;
 	FVector surface_normal;
 	FVector Velocity;
-	float Speed = 7000.0f;
+	float initSpeed = 2000.0f;
 	FVector prev = FVector(0.0f, 0.0f, 0.0f);
 	FVector test_Velocity;
 
 	bool bDidHit;
 	FHitResult TraceResult;
 	FCollisionQueryParams TraceParams;
+	AActor* paddleActor;
 
 	/*	Other Actor Variables */
 	FString LeftPaddle = "LeftPaddlePawn_2";	
@@ -60,8 +61,9 @@ public:
 	//AActor* paddleActor;							//Storing the information of the actor that was hit
 	FString otherActorName;						//Storing the name of the actor hit by the ball
 
-private:
-	FVector onPaddleHit(FVector Reflection, AActor* otherActor);
+public:
+	FVector onPaddleHit(FVector Reflection, FVector paddle_velocity, bool enableRandom, bool isIncreasingSpeed);
+	FVector setBallVelocityMultiplier(FVector curr_velocity,float speedMultiplier);
 
 protected:
 	// Called when the game starts or when spawned
