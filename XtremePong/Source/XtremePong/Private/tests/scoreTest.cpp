@@ -5,6 +5,7 @@
 #include "ScoreBoard.h"
 #include "Ball.h"
 #include "Tests/AutomationCommon.h"
+#include "Tests/AutomationEditorCommon.h"
 
 #include <string>
 
@@ -486,16 +487,24 @@ in the ball creaiton method.
 bool FBallCreationTest::RunTest(FString const& Parameters){
 	FVector expectedCoords = FVector(0.0f, 0.0f, 20.0f);
 
+	FVector scoreLoc = FVector(0.0f, 0.0f, 0.0f);
+	FRotator scoreRot = FRotator(0.0f, 0.0f, 0.0f);
+
+	UWorld* World = FAutomationEditorCommonUtils::CreateNewMap();
+
 	//Creates scoreboard that then creates a ball.
-	AScoreBoard *board = NewObject<AScoreBoard>();
+	AScoreBoard *board = World->SpawnActor<AScoreBoard>(scoreLoc, scoreRot);
 	board->createBall();
 
 	//Gets Ball's coordinates.
 	auto ballPtr = board->balls[board->ballCount - 1];
 	FVector ballCoords = ballPtr->GetActorLocation();
 
+	//Gets rid of spawned ball.
+	board->balls[0]->Destroy();
+
 	//Gets rid of test scoreboard.
-	board->MarkAsGarbage();
+	board->Destroy();
 	
 	//Tests to make sure all coordinate axis are valid.
 	TestTrue("X == 0", (expectedCoords[0] == ballCoords[0]));

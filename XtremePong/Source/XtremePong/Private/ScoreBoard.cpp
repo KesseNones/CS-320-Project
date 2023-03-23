@@ -23,6 +23,9 @@ AScoreBoard::AScoreBoard()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	
+	//Root compomnent for scoreboard created.
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Default Component"));
+
 	player1Score = 0;
 	player2Score = 0;
 	gameRound = 0;
@@ -65,8 +68,8 @@ void AScoreBoard::createBall(){
 	FVector ballLoc = FVector(0.0f, 0.0f, 20.0f);
 	FRotator ballRot = FRotator(0.0f, 0.0f, 0.0f);
 
-	balls[ballCount] = NewObject<ABall>();
-
+	//Creates ball and sets appropriate scale, position, and rotation.
+	balls[ballCount] = GetWorld()->SpawnActor<ABall>(ballLoc, ballRot);
 	balls[ballCount]->SetActorScale3D(FVector(20.0f));
 	ballCount++;
 }
