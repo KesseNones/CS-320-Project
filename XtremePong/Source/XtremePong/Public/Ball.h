@@ -21,34 +21,11 @@ class XTREMEPONG_API ABall : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
-	// Sets default values for this actor's properties
-	ABall();
-
-	
-
-	virtual void Tick(float DeltaTime) override;
-
-	//ball component
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
-	UStaticMeshComponent* ballMesh;
-
-	UPROPERTY(VisibleAnywhere, Category = "Collision")
-	USphereComponent* CollisionSphere;
-
-
-	/*	Velocity Variables */
-	UPROPERTY(EditAnywhere, Category = "BallSize")
-		float BallSize = 10.0f;
-	UPROPERTY(EditAnywhere)
-		float BounceFactor = 1.1f;
-
+private:	
+	FVector Velocity;
 	FVector Reflection;
 	FVector surface_normal;
-	FVector Velocity;
 	float initSpeed = 2000.0f;
-	FVector prev = FVector(0.0f, 0.0f, 0.0f);
-	FVector test_Velocity;
 
 	bool bDidHit;
 	FHitResult TraceResult;
@@ -62,8 +39,29 @@ public:
 	FString otherActorName;						//Storing the name of the actor hit by the ball
 
 public:
+	// Sets default values for this actor's properties
+	ABall();
+
+	virtual void Tick(float DeltaTime) override;
+
+	//ball component
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+		UStaticMeshComponent* ballMesh;
+
+	UPROPERTY(VisibleAnywhere, Category = "Collision")
+		USphereComponent* CollisionSphere;
+
+
+	/*	Velocity Variables */
+	UPROPERTY(EditAnywhere, Category = "BallSize")
+		float BallSize = 10.0f;
+	UPROPERTY(EditAnywhere)
+		float BounceFactor = 1.1f;
+
 	FVector onPaddleHit(FVector Reflection, FVector paddle_velocity, bool enableRandom, bool isIncreasingSpeed);
 	FVector setBallVelocityMultiplier(FVector curr_velocity,float speedMultiplier);
+	void setBallVelocity(FVector newVelocity);
+	FVector getBallVelocity();
 
 protected:
 	// Called when the game starts or when spawned

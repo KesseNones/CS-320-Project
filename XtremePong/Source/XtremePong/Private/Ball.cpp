@@ -100,6 +100,16 @@ FVector ABall::setBallVelocityMultiplier(FVector curr_velocity,float speedMultip
 	return newVector;
 }
 
+void ABall::setBallVelocity(FVector newVelocity)
+{
+	Velocity = newVelocity;
+}
+
+FVector ABall::getBallVelocity()
+{
+	return Velocity;
+}
+
 FVector ABall::onPaddleHit(FVector curr_reflect, FVector paddle_vector, bool enableRandom, bool isIncreasingSpeed)
 {
 	FVector increaseVector = FVector(0.0f, 0.0f, 0.0f);
@@ -117,7 +127,6 @@ FVector ABall::onPaddleHit(FVector curr_reflect, FVector paddle_vector, bool ena
 		if (abs(curr_reflect.X) < 20000.0f)
 		{
 			increaseVector = setBallVelocityMultiplier(newVector, 1.2f);
-			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("New X = %f"), increaseVector.X));
 			return increaseVector;
 		}
 	}
