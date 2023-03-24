@@ -4,7 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Kismet/GameplayStatics.h"
 #include "LeftPaddlePawn.h"
+#include "PowerUpSpawner.h"
 #include "TopDownGameModeBase.generated.h"
 
 /**
@@ -17,5 +19,4 @@ class XTREMEPONG_API ATopDownGameModeBase : public AGameModeBase
 
 public:
 	ATopDownGameModeBase();
-		
 };
