@@ -14,6 +14,7 @@
 #include "Components/SphereComponent.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "UObject/ConstructorHelpers.h"
+#include "UObject/Object.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
 
@@ -129,9 +130,8 @@ bool FInitPowerUpTest::RunTest(FString const& Parameters) {
 	TestEqual("Sphere is correctly scaled", SphereComp->GetRelativeScale3D(), FVector(10.0f, 10.0f, 10.0f));
 	
 	// Check that the Static Mesh uses the right mesh and scaling
-	//ConstructorHelpers::FObjectFinder<UStaticMesh>ExpectedMesh(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'"));	// This crashes Unreal :(
-	//TestEqual("Static Mesh uses a sphere mesh", StaticMeshComp->GetStaticMesh(), ExpectedMesh);
-	//TestEqual("Static Mesh is correctly scaled", StaticMeshComp->GetRelativeScale3D(), FVector(0.6f, 0.6f, 0.6f));
+	TestEqual("Static Mesh uses a sphere mesh", *StaticMeshComp->GetStaticMesh()->GetPathName(), "/Engine/BasicShapes/Sphere.Sphere");
+	TestEqual("Static Mesh is correctly scaled", StaticMeshComp->GetRelativeScale3D(), FVector(0.6f, 0.6f, 0.6f));
 
 	PowerUp->Destroy();
 	return true;
@@ -195,6 +195,8 @@ bool FSpawnPowerUpPositionTest::RunTest(FString const& Parameters) {
 			&& PowerUpPos.X > SpawnerMinExtent.X
 			&& PowerUpPos.Y > SpawnerMinExtent.Y
 			&& PowerUpPos.Z > SpawnerMinExtent.Z);
+
+		PowerUp->Destroy();
 	}
 	
 	PowerUpSpawner->Destroy();
@@ -236,6 +238,136 @@ bool FSpawnPowerUpTimingTest::RunTest(FString const& Parameters) {
 	return true;
 }
 
+// Tests 7, 8, 9, 10 - White-box Tests: Provide full branch-level coverage of PaddleMovementComponent's TickComponent method:
+/*
+void UPaddleMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// Make sure everything is valid and the paddle is allowed to move
+	if (!PawnOwner || !UpdatedComponent || ShouldSkipUpdate(DeltaTime)) {
+		isValid = false;
+		return;
+	}
+
+	isValid = true;
+
+	// Get the movement vector set in paddles' Tick function
+	FVector DesiredMovementThisFrame = ConsumeInputVector().GetClampedToMaxSize(1.0f) * DeltaTime * SpeedMultiplier;
+
+	// Move the paddle, respecting solid barriers
+	if (!DesiredMovementThisFrame.IsNearlyZero()) {
+		wouldMove = true;
+
+		FHitResult Hit;
+		SafeMoveUpdatedComponent(DesiredMovementThisFrame, UpdatedComponent->GetComponentRotation(), true, Hit);
+
+		// If we hit something, try to slide along it rather than getting stuck
+		if (Hit.IsValidBlockingHit()) {
+			isHitting = true;
+			SlideAlongSurface(DesiredMovementThisFrame, 1.f - Hit.Time, Hit.Normal, Hit);
+			return;
+		}
+
+		isHitting = false;
+		return;
+	}
+
+	wouldMove = false;
+}
+*/
+
+// Test 7 - White-box Test 1: PaddleMovementComponent doesn't have an owner or updated component, or should otherwise not try to move
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FInvalidPaddleMovementCompTest, "InvalidPaddleMovementComponent",
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+bool FInvalidPaddleMovementCompTest::RunTest(FString const& Parameters) {
+	
+	// LeftPaddlePawns are given PaddleMovementComponents upon construction, 
+	// so create a new world and spawn a LeftPaddlePawn in it
+	UWorld* World = FAutomationEditorCommonUtils::CreateNewMap();
+	ALeftPaddlePawn* Paddle = World->SpawnActor<ALeftPaddlePawn>();
+
+	// Get the PaddleMovementComponent and invalidate it
+	UPaddleMovementComponent* PaddleMovementComp = (UPaddleMovementComponent*)Paddle->GetMovementComponent();
+	PaddleMovementComp->SetUpdatedComponent(NULL);
+	PaddleMovementComp->TickComponent(0.01f, LEVELTICK_All, new FActorComponentTickFunction());
+
+	TestFalse("PaddleMovementComponent is valid", PaddleMovementComp->isValid);
+
+	Paddle->Destroy();
+	return true;
+}
+
+
+// Test 8 - White-box Test 2: PaddleMovementComponent is valid, but its desired movement is practically zero
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FZeroInputPaddleMovementCompTest, "ZeroInputPaddleMovementComponent",
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+bool FZeroInputPaddleMovementCompTest::RunTest(FString const& Parameters) {
+
+	UWorld* World = FAutomationEditorCommonUtils::CreateNewMap();
+	ALeftPaddlePawn* Paddle = World->SpawnActor<ALeftPaddlePawn>();
+
+	// Get the PaddleMovementComponent and validate it
+	UPaddleMovementComponent* PaddleMovementComp = (UPaddleMovementComponent*)Paddle->GetMovementComponent();
+	PaddleMovementComp->TickComponent(0.01f, LEVELTICK_All, new FActorComponentTickFunction());
+
+	TestTrue("PaddleMovementComponent is valid", PaddleMovementComp->isValid);
+
+	// Give it a zero vector for input and make sure it wouldn't move
+	PaddleMovementComp->AddInputVector(FVector().Zero());
+	PaddleMovementComp->TickComponent(0.01f, LEVELTICK_All, new FActorComponentTickFunction());
+
+	TestFalse("PaddleMovementComponent would move", PaddleMovementComp->wouldMove);
+
+	Paddle->Destroy();
+	return true;
+}
+
+
+// Test 9 - White-box Test 3: PaddleMovementComponent is valid and moves, but does not hit anything
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FNoHitPaddleMovementCompTest, "NoHitPaddleMovementComponent",
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+bool FNoHitPaddleMovementCompTest::RunTest(FString const& Parameters) {
+
+	UWorld* World = FAutomationEditorCommonUtils::CreateNewMap();
+	ALeftPaddlePawn* Paddle = World->SpawnActor<ALeftPaddlePawn>();
+	UPaddleMovementComponent* PaddleMovementComp = (UPaddleMovementComponent*)Paddle->GetMovementComponent();
+
+	// Give it a one vector for input, make sure it would move and not hit anything
+	PaddleMovementComp->AddInputVector(FVector().One());
+	PaddleMovementComp->TickComponent(0.01f, LEVELTICK_All, new FActorComponentTickFunction());
+
+	TestTrue("PaddleMovementComponent would move", PaddleMovementComp->wouldMove);
+	TestFalse("PaddleMovementComponent is hitting something", PaddleMovementComp->isHitting);
+
+	Paddle->Destroy();
+	return true;
+}
+
+// Test 10 - White-box Test 4: PaddleMovementComponent is valid, would move, and hits something
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FHitPaddleMovementCompTest, "HitPaddleMovementComponent",
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+bool FHitPaddleMovementCompTest::RunTest(FString const& Parameters) {
+
+	// Create a world and spawn a left paddle, then a right paddle for it to collide with
+	UWorld* World = FAutomationEditorCommonUtils::CreateNewMap();
+	ALeftPaddlePawn* Paddle = World->SpawnActor<ALeftPaddlePawn>();
+	ARightPaddlePawn* HitObject = World->SpawnActor<ARightPaddlePawn>(FVector().One(), FRotator().ZeroRotator);
+	UPaddleMovementComponent* PaddleMovementComp = (UPaddleMovementComponent*)Paddle->GetMovementComponent();
+
+	// Give it a one vector for input, make sure it moves and hits the right paddle
+	PaddleMovementComp->AddInputVector(FVector().One());
+	PaddleMovementComp->TickComponent(0.01f, LEVELTICK_All, new FActorComponentTickFunction());
+
+	TestTrue("PaddleMovementComponent is hitting something", PaddleMovementComp->isHitting);
+
+	Paddle->Destroy();
+	HitObject->Destroy();
+	return true;
+}
 
 #endif
 
@@ -247,16 +379,11 @@ bool FSpawnPowerUpTimingTest::RunTest(FString const& Parameters) {
 		- Do the same for moving down
 		- Ensure that after moving paddles, their X and Z positions haven't changed
 		- Call LeftPaddle::SendRightPaddleMove(1.0f) and compare the right paddle's new position to original position
-
-	- White-box test of PaddleMovementComponent?
-	
-	- Integration test to make sure PowerUpSpawner actually spawns a PowerUp? test spawning intervals?
-	
-	- Test objects' initial values (constructor testing)
 	
 	
-	Tests done: 5/12
+	Tests done: 9/12
 	- Blackbox
 	- Integration
+	- Whitebox
 
 */
