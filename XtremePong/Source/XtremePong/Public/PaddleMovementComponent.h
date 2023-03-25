@@ -24,5 +24,5 @@ public:
 	UPROPERTY(EditAnywhere)
 		float SpeedMultiplier = 500.0f;
 
-	bool isValid, wouldMove, isHitting;
+	bool bIsValid, bWouldMove, bIsHitting;
 };

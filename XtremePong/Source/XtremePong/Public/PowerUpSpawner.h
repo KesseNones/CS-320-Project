@@ -26,6 +26,7 @@ protected:
 		FVector BoxExtent = FVector(1000.0f, 1000.0f, 1000.0f);
 
 	FTimerHandle SpawnTimerHandle;
+	
 
 	// How many seconds between power up spawns
 	UPROPERTY(EditAnywhere)
@@ -38,7 +39,5 @@ public:
 	void SpawnPowerUp();
 
 	float GetSpawnRate();
-
-	FTimerHandle GetTimerHandle();
 
 };

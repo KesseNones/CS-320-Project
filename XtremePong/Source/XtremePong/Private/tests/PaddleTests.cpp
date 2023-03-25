@@ -204,79 +204,45 @@ bool FSpawnPowerUpPositionTest::RunTest(FString const& Parameters) {
 }
 
 
-DEFINE_LATENT_AUTOMATION_COMMAND_ONE_PARAMETER(FInitOnePowerUpTest, UWorld*, World);
-bool FInitOnePowerUpTest::Update() {
-
-	TArray<APowerUp*> PowerUps;
-	UGameplayStatics::GetAllActorsOfClass(World, APowerUp::StaticClass(), (TArray<AActor*> &)PowerUps);
-
-	// Check that one and only one PowerUp spawned in the time allotted.
-	//Test->TestEqual("Only one PowerUp spawned", PowerUps.Num(), 1);
-
-	APowerUp* PowerUp = PowerUps[0];
-
-
-
-	PowerUp->Destroy();
-	return true;
-}
-
-// Test 6 - Bottom-up Integration Test: Test PowerUpSpawner's ability to spawn PowerUps at the correct intervals
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSpawnPowerUpTimingTest, "SpawnPowerUpTiming",
-	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
-
-bool FSpawnPowerUpTimingTest::RunTest(FString const& Parameters) {
-	
-	// Latent function: wait for PowerUp to spawn, then check where it spawned and how long it took to spawn
-	
-	//ADD_LATENT_AUTOMATION_COMMAND(FWaitLatentCommand(PowerUpSpawner->GetSpawnRate() + 1));
-	
-	// Make sure one PowerUp spawned correctly in that time
-	//ADD_LATENT_AUTOMATION_COMMAND(FInitOnePowerUpTest(this, World));
-	
-	
-	return true;
-}
-
-// Tests 7, 8, 9, 10 - White-box Tests: Provide full branch-level coverage of PaddleMovementComponent's TickComponent method:
+// Tests 6, 7, 8, 9 - White-box Tests: Provide full branch-level coverage of PaddleMovementComponent's TickComponent method:
 /*
 void UPaddleMovementComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// Make sure everything is valid and the paddle is allowed to move
 	if (!PawnOwner || !UpdatedComponent || ShouldSkipUpdate(DeltaTime)) {
-		isValid = false;
+		bIsValid = false;
 		return;
 	}
 
-	isValid = true;
+	bIsValid = true;
 
 	// Get the movement vector set in paddles' Tick function
 	FVector DesiredMovementThisFrame = ConsumeInputVector().GetClampedToMaxSize(1.0f) * DeltaTime * SpeedMultiplier;
 
 	// Move the paddle, respecting solid barriers
 	if (!DesiredMovementThisFrame.IsNearlyZero()) {
-		wouldMove = true;
+		bWouldMove = true;
 
 		FHitResult Hit;
 		SafeMoveUpdatedComponent(DesiredMovementThisFrame, UpdatedComponent->GetComponentRotation(), true, Hit);
 
 		// If we hit something, try to slide along it rather than getting stuck
 		if (Hit.IsValidBlockingHit()) {
-			isHitting = true;
+			bIsHitting = true;
 			SlideAlongSurface(DesiredMovementThisFrame, 1.f - Hit.Time, Hit.Normal, Hit);
 			return;
 		}
 
-		isHitting = false;
+		bIsHitting = false;
 		return;
 	}
 
-	wouldMove = false;
+	bWouldMove = false;
 }
 */
 
-// Test 7 - White-box Test 1: PaddleMovementComponent doesn't have an owner or updated component, or should otherwise not try to move
+// Test 6 - White-box Test 1: PaddleMovementComponent doesn't have an owner or updated component, or should otherwise not try to move
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FInvalidPaddleMovementCompTest, "InvalidPaddleMovementComponent",
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -292,14 +258,14 @@ bool FInvalidPaddleMovementCompTest::RunTest(FString const& Parameters) {
 	PaddleMovementComp->SetUpdatedComponent(NULL);
 	PaddleMovementComp->TickComponent(0.01f, LEVELTICK_All, new FActorComponentTickFunction());
 
-	TestFalse("PaddleMovementComponent is valid", PaddleMovementComp->isValid);
+	TestFalse("PaddleMovementComponent is valid", PaddleMovementComp->bIsValid);
 
 	Paddle->Destroy();
 	return true;
 }
 
 
-// Test 8 - White-box Test 2: PaddleMovementComponent is valid, but its desired movement is practically zero
+// Test 7 - White-box Test 2: PaddleMovementComponent is valid, but its desired movement is practically zero
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FZeroInputPaddleMovementCompTest, "ZeroInputPaddleMovementComponent",
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -312,20 +278,20 @@ bool FZeroInputPaddleMovementCompTest::RunTest(FString const& Parameters) {
 	UPaddleMovementComponent* PaddleMovementComp = (UPaddleMovementComponent*)Paddle->GetMovementComponent();
 	PaddleMovementComp->TickComponent(0.01f, LEVELTICK_All, new FActorComponentTickFunction());
 
-	TestTrue("PaddleMovementComponent is valid", PaddleMovementComp->isValid);
+	TestTrue("PaddleMovementComponent is valid", PaddleMovementComp->bIsValid);
 
 	// Give it a zero vector for input and make sure it wouldn't move
 	PaddleMovementComp->AddInputVector(FVector().Zero());
 	PaddleMovementComp->TickComponent(0.01f, LEVELTICK_All, new FActorComponentTickFunction());
 
-	TestFalse("PaddleMovementComponent would move", PaddleMovementComp->wouldMove);
+	TestFalse("PaddleMovementComponent would move", PaddleMovementComp->bWouldMove);
 
 	Paddle->Destroy();
 	return true;
 }
 
 
-// Test 9 - White-box Test 3: PaddleMovementComponent is valid and moves, but does not hit anything
+// Test 8 - White-box Test 3: PaddleMovementComponent is valid and moves, but does not hit anything
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FNoHitPaddleMovementCompTest, "NoHitPaddleMovementComponent",
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -339,14 +305,14 @@ bool FNoHitPaddleMovementCompTest::RunTest(FString const& Parameters) {
 	PaddleMovementComp->AddInputVector(FVector().One());
 	PaddleMovementComp->TickComponent(0.01f, LEVELTICK_All, new FActorComponentTickFunction());
 
-	TestTrue("PaddleMovementComponent would move", PaddleMovementComp->wouldMove);
-	TestFalse("PaddleMovementComponent is hitting something", PaddleMovementComp->isHitting);
+	TestTrue("PaddleMovementComponent would move", PaddleMovementComp->bWouldMove);
+	TestFalse("PaddleMovementComponent is hitting something", PaddleMovementComp->bIsHitting);
 
 	Paddle->Destroy();
 	return true;
 }
 
-// Test 10 - White-box Test 4: PaddleMovementComponent is valid, would move, and hits something
+// Test 9 - White-box Test 4: PaddleMovementComponent is valid, would move, and hits something
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FHitPaddleMovementCompTest, "HitPaddleMovementComponent",
 	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -362,28 +328,218 @@ bool FHitPaddleMovementCompTest::RunTest(FString const& Parameters) {
 	PaddleMovementComp->AddInputVector(FVector().One());
 	PaddleMovementComp->TickComponent(0.01f, LEVELTICK_All, new FActorComponentTickFunction());
 
-	TestTrue("PaddleMovementComponent is hitting something", PaddleMovementComp->isHitting);
+	TestTrue("PaddleMovementComponent is hitting something", PaddleMovementComp->bIsHitting);
 
 	Paddle->Destroy();
 	HitObject->Destroy();
 	return true;
 }
 
+
+// Test 10 - Acceptance Test: Test that LeftPaddlePawn moves up the correct amount
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FLeftPaddleMoveUpInputTest, "LeftPaddleMoveUp",
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+bool FLeftPaddleMoveUpInputTest::RunTest(FString const& Parameters) {
+
+	UWorld* World = FAutomationEditorCommonUtils::CreateNewMap();
+	ALeftPaddlePawn* Paddle = World->SpawnActor<ALeftPaddlePawn>();
+	UPaddleMovementComponent* MoveComp = (UPaddleMovementComponent*)Paddle->GetMovementComponent();
+
+	FVector InitPos = Paddle->GetActorLocation();
+
+	float AxisValue = 1.0f;
+	float DeltaTime = 0.01f;
+
+	Paddle->LeftPaddleMove(AxisValue);
+	MoveComp->TickComponent(DeltaTime, LEVELTICK_All, new FActorComponentTickFunction());
+
+	// Expected position vector based on the intermediate calculations done by LeftPaddlePawn and PaddleMovementComponent
+	FVector ExpectedFinalPos = (Paddle->GetActorRightVector() * AxisValue).GetClampedToMaxSize(1.0f) * DeltaTime * MoveComp->SpeedMultiplier;
+	FVector FinalPos = Paddle->GetActorLocation();
+
+	// Test correct direction and movement amount
+	TestEqual("Left paddle X position", FinalPos.X, InitPos.X);
+	TestEqual("Left paddle Z position", FinalPos.Z, InitPos.Z);
+	TestTrue("Left paddle moved up (+Y direction)", FinalPos.Y > InitPos.Y);
+	TestEqual("Final left paddle position", FinalPos, ExpectedFinalPos);
+
+	Paddle->Destroy();
+	return true;
+}
+
+// Test 11 - Acceptance Test: Test that LeftPaddlePawn moves down the correct amount
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FLeftPaddleMoveDownInputTest, "LeftPaddleMoveDown",
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+bool FLeftPaddleMoveDownInputTest::RunTest(FString const& Parameters) {
+
+	UWorld* World = FAutomationEditorCommonUtils::CreateNewMap();
+	ALeftPaddlePawn* Paddle = World->SpawnActor<ALeftPaddlePawn>();
+	UPaddleMovementComponent* MoveComp = (UPaddleMovementComponent*)Paddle->GetMovementComponent();
+
+	FVector InitPos = Paddle->GetActorLocation();
+
+	float AxisValue = -1.0f;
+	float DeltaTime = 0.01f;
+
+	Paddle->LeftPaddleMove(AxisValue);
+	MoveComp->TickComponent(DeltaTime, LEVELTICK_All, new FActorComponentTickFunction());
+
+	// Expected position vector based on the intermediate calculations done by LeftPaddlePawn and PaddleMovementComponent
+	FVector ExpectedFinalPos = (Paddle->GetActorRightVector() * AxisValue).GetClampedToMaxSize(1.0f) * DeltaTime * MoveComp->SpeedMultiplier;
+	FVector FinalPos = Paddle->GetActorLocation();
+
+	// Test correct direction and movement amount
+	TestEqual("Left paddle X position", FinalPos.X, InitPos.X);
+	TestEqual("Left paddle Z position", FinalPos.Z, InitPos.Z);
+	TestTrue("Left paddle moved down (-Y direction)", FinalPos.Y < InitPos.Y);
+	TestEqual("Final left paddle position", FinalPos, ExpectedFinalPos);
+
+	Paddle->Destroy();
+	return true;
+}
+
+// Test 12 - Acceptance Test: Test that LeftPaddlePawn moves down the correct amount
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FLeftPaddleMoveZeroInputTest, "LeftPaddleNoMove",
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+bool FLeftPaddleMoveZeroInputTest::RunTest(FString const& Parameters) {
+
+	UWorld* World = FAutomationEditorCommonUtils::CreateNewMap();
+	ALeftPaddlePawn* Paddle = World->SpawnActor<ALeftPaddlePawn>();
+	UPaddleMovementComponent* MoveComp = (UPaddleMovementComponent*)Paddle->GetMovementComponent();
+
+	FVector InitPos = Paddle->GetActorLocation();
+
+	float AxisValue = 0.0f;
+	float DeltaTime = 0.01f;
+
+	Paddle->LeftPaddleMove(AxisValue);
+	MoveComp->TickComponent(DeltaTime, LEVELTICK_All, new FActorComponentTickFunction());
+
+	// Expected position vector based on the intermediate calculations done by LeftPaddlePawn and PaddleMovementComponent
+	FVector ExpectedFinalPos = (Paddle->GetActorRightVector() * AxisValue).GetClampedToMaxSize(1.0f) * DeltaTime * MoveComp->SpeedMultiplier;
+	FVector FinalPos = Paddle->GetActorLocation();
+
+	// Test correct direction and movement amount
+	TestEqual("Left paddle position", FinalPos, InitPos);
+	TestEqual("Final left paddle position", FinalPos, ExpectedFinalPos);
+
+	Paddle->Destroy();
+	return true;
+}
+
+// Tests 13, 14, 15 - Bottom-up Integration Tests: Ensure LeftPaddlePawn sends correct input to RightPaddlePawn, 
+//													and that RightPaddlePawn responds accordingly
+
+// Test 13 - Bottom-up Integration Test: Test sending up input to right paddle
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FRightPaddleMoveUpInputTest, "RightPaddleMoveUp",
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+bool FRightPaddleMoveUpInputTest::RunTest(FString const& Parameters) {
+
+	UWorld* World = FAutomationEditorCommonUtils::CreateNewMap();
+	ALeftPaddlePawn* LeftPaddle = World->SpawnActor<ALeftPaddlePawn>();
+
+	// Right paddle is spawned far away from left paddle to avoid collisions
+	ARightPaddlePawn* RightPaddle = World->SpawnActor<ARightPaddlePawn>(FVector(500.0f, 0.0f, 0.0f), FRotator().ZeroRotator);
+	UPaddleMovementComponent* MoveComp = (UPaddleMovementComponent*)RightPaddle->GetMovementComponent();
+
+	FVector InitPos = RightPaddle->GetActorLocation();
+
+	float AxisValue = 1.0f;
+	float DeltaTime = 0.01f;
+
+	// Have left paddle send movement input to right paddle
+	LeftPaddle->SendRightPaddleMove(AxisValue);
+	MoveComp->TickComponent(DeltaTime, LEVELTICK_All, new FActorComponentTickFunction());
+
+	// Expected position vector based on the intermediate calculations done by RightPaddlePawn and PaddleMovementComponent
+	FVector ExpectedFinalPos = ((RightPaddle->GetActorRightVector() * AxisValue).GetClampedToMaxSize(1.0f) * DeltaTime * MoveComp->SpeedMultiplier) + InitPos;
+	FVector FinalPos = RightPaddle->GetActorLocation();
+
+	// Test correct direction and movement amount
+	TestEqual("Right paddle X position", FinalPos.X, InitPos.X);
+	TestEqual("Right paddle Z position", FinalPos.Z, InitPos.Z);
+	TestTrue("Right paddle moved up (+Y direction)", FinalPos.Y > InitPos.Y);
+	TestEqual("Final right paddle position", FinalPos, ExpectedFinalPos);
+
+	LeftPaddle->Destroy();
+	RightPaddle->Destroy();
+	return true;
+}
+
+// Test 14 - Bottom-up Integration Test: Test sending down input to right paddle
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FRightPaddleMoveDownInputTest, "RightPaddleMoveDown",
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+bool FRightPaddleMoveDownInputTest::RunTest(FString const& Parameters) {
+
+	UWorld* World = FAutomationEditorCommonUtils::CreateNewMap();
+	ALeftPaddlePawn* LeftPaddle = World->SpawnActor<ALeftPaddlePawn>();
+
+	// Right paddle is spawned far away from left paddle to avoid collisions
+	ARightPaddlePawn* RightPaddle = World->SpawnActor<ARightPaddlePawn>(FVector(500.0f, 0.0f, 0.0f), FRotator().ZeroRotator);
+	UPaddleMovementComponent* MoveComp = (UPaddleMovementComponent*)RightPaddle->GetMovementComponent();
+
+	FVector InitPos = RightPaddle->GetActorLocation();
+
+	float AxisValue = -1.0f;
+	float DeltaTime = 0.01f;
+
+	// Have left paddle send movement input to right paddle
+	LeftPaddle->SendRightPaddleMove(AxisValue);
+	MoveComp->TickComponent(DeltaTime, LEVELTICK_All, new FActorComponentTickFunction());
+
+	// Expected position vector based on the intermediate calculations done by RightPaddlePawn and PaddleMovementComponent
+	FVector ExpectedFinalPos = ((RightPaddle->GetActorRightVector() * AxisValue).GetClampedToMaxSize(1.0f) * DeltaTime * MoveComp->SpeedMultiplier) + InitPos;
+	FVector FinalPos = RightPaddle->GetActorLocation();
+
+	// Test correct direction and movement amount
+	TestEqual("Right paddle X position", FinalPos.X, InitPos.X);
+	TestEqual("Right paddle Z position", FinalPos.Z, InitPos.Z);
+	TestTrue("Right paddle moved down (-Y direction)", FinalPos.Y < InitPos.Y);
+	TestEqual("Final right paddle position", FinalPos, ExpectedFinalPos);
+
+	LeftPaddle->Destroy();
+	RightPaddle->Destroy();
+	return true;
+}
+
+// Test 15 - Bottom-up Integration Test: Test sending zero input to right paddle
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FRightPaddleMoveZeroInputTest, "RightPaddleNoMove",
+	EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
+
+bool FRightPaddleMoveZeroInputTest::RunTest(FString const& Parameters) {
+
+	UWorld* World = FAutomationEditorCommonUtils::CreateNewMap();
+	ALeftPaddlePawn* LeftPaddle = World->SpawnActor<ALeftPaddlePawn>();
+
+	// Right paddle is spawned far away from left paddle to avoid collisions
+	ARightPaddlePawn* RightPaddle = World->SpawnActor<ARightPaddlePawn>(FVector(500.0f, 0.0f, 0.0f), FRotator().ZeroRotator);
+	UPaddleMovementComponent* MoveComp = (UPaddleMovementComponent*)RightPaddle->GetMovementComponent();
+
+	FVector InitPos = RightPaddle->GetActorLocation();
+
+	float AxisValue = 0.0f;
+	float DeltaTime = 0.01f;
+
+	// Have left paddle send movement input to right paddle
+	LeftPaddle->SendRightPaddleMove(AxisValue);
+	MoveComp->TickComponent(DeltaTime, LEVELTICK_All, new FActorComponentTickFunction());
+
+	// Expected position vector based on the intermediate calculations done by RightPaddlePawn and PaddleMovementComponent
+	FVector ExpectedFinalPos = ((RightPaddle->GetActorRightVector() * AxisValue).GetClampedToMaxSize(1.0f) * DeltaTime * MoveComp->SpeedMultiplier) + InitPos;
+	FVector FinalPos = RightPaddle->GetActorLocation();
+
+	// Test correct direction and movement amount
+	TestEqual("Right paddle position", FinalPos, InitPos);
+	TestEqual("Final right paddle position", FinalPos, ExpectedFinalPos);
+
+	LeftPaddle->Destroy();
+	RightPaddle->Destroy();
+	return true;
+}
+
 #endif
-
-
-/* Possible tests :
-
-	- Paddle movement tests
-		- Call their movement methods with AxisValue = 1.0f ten times or something, then verify that paddle position is 10 units above original position
-		- Do the same for moving down
-		- Ensure that after moving paddles, their X and Z positions haven't changed
-		- Call LeftPaddle::SendRightPaddleMove(1.0f) and compare the right paddle's new position to original position
-	
-	
-	Tests done: 9/12
-	- Blackbox
-	- Integration
-	- Whitebox
-
-*/

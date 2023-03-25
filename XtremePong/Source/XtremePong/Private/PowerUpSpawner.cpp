@@ -45,7 +45,3 @@ void APowerUpSpawner::SpawnPowerUp() {
 float APowerUpSpawner::GetSpawnRate() {
 	return SpawnRate;
 }
-
-FTimerHandle APowerUpSpawner::GetTimerHandle() {
-	return SpawnTimerHandle;
-}
