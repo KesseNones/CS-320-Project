@@ -30,7 +30,7 @@ ABall::ABall()
 	static ConstructorHelpers::FObjectFinder<UMaterial> SphereMaterial(TEXT("Material'/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial'"));
 
 	if (SphereMesh.Succeeded()) texture->SetStaticMesh(SphereMesh.Object);
-	//if (SphereMaterial.Succeeded()) texture->SetMaterial(0, SphereMaterial.Object);
+	if (SphereMaterial.Succeeded()) texture->SetMaterial(0, SphereMaterial.Object);
 
 	texture->SetWorldScale3D(FVector(0.2f));
 	

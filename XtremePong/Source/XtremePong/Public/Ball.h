@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include "UObject/ConstructorHelpers.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
@@ -10,7 +11,6 @@
 #include "Engine/EngineTypes.h"
 #include "Engine/StaticMesh.h"
 #include "Kismet/KismetMathLibrary.h"
-
 #include "LeftPaddlePawn.h"
 #include "RightPaddlePawn.h"
 
