@@ -34,6 +34,8 @@ ABall::ABall()
 
 	texture->SetWorldScale3D(FVector(0.2f));
 	
+	enableRandom = true;
+	isIncreasingSpeed = false;
 }
 
 // Called when the game starts or when spawned
@@ -62,7 +64,7 @@ void ABall::Tick(float DeltaTime)
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Your Message"));
 	SetActorLocation(NewLocation);
 
-	TraceEnd = GetActorLocation() + Velocity * DeltaTime * 20;
+	TraceEnd = GetActorLocation() + Velocity * DeltaTime * 10;
 	
 	TraceParams.AddIgnoredActor(this);
 	// Perform the line trace
@@ -85,7 +87,7 @@ void ABall::Tick(float DeltaTime)
 		{
 			APawn* paddle = (APawn*)paddleActor;
 			FVector paddle_vector = paddle->GetLastMovementInputVector();
-			Velocity = onPaddleHit(Reflection, paddle_vector, false,true);
+			Velocity = onPaddleHit(Reflection, paddle_vector);
 		}
 		else
 		{
@@ -100,6 +102,11 @@ FVector ABall::setBallVelocityMultiplier(FVector curr_velocity,float speedMultip
 	return newVector;
 }
 
+/*		setter and getter
+*	gets the ball velocity and sets the ball velocity 
+*	since ball velocity is private in the header file 
+*/
+
 void ABall::setBallVelocity(FVector newVelocity)
 {
 	Velocity = newVelocity;
@@ -110,7 +117,7 @@ FVector ABall::getBallVelocity()
 	return Velocity;
 }
 
-FVector ABall::onPaddleHit(FVector curr_reflect, FVector paddle_vector, bool enableRandom, bool isIncreasingSpeed)
+FVector ABall::onPaddleHit(FVector curr_reflect, FVector paddle_vector)
 {
 	FVector increaseVector = FVector(0.0f, 0.0f, 0.0f);
 	FVector newVector;

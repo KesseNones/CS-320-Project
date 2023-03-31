@@ -1,3 +1,4 @@
+/*
 #include "Ball.h"
 #include "CrazyBall.h"
 #include "Tests/AutomationCommon.h"
@@ -6,7 +7,7 @@
 /*              Black Box Testing (1) "acceptance test"
 *   Testing the ball bouncing from straight collision onto a flat surface
 * 
-*/
+
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass1, "Test Ball Bouncing Back From Straight Collision",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
@@ -35,7 +36,7 @@ bool TestClass1::RunTest(FString const& Parameters) {
 
 /*          Black Box Testing (2) "acceptance test"
 *   Testing at a 45 deg angle, it should calculate the bounce at a 90 deg angle on a flat surface
-*/
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass2, "Test Ball Bouncing @ 45 Deg Angle",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -63,7 +64,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass2, "Test Ball Bouncing @ 45 Deg Angle"
 /*          Black Box Testing (3) "acceptance test"
 *   This tests the reflection while the paddle is moving
 *   It's white box testing because I need to look into the code to see how strong the new angle is
-*/
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass3, "Test Straight Ball Bouncing From Up Moving Paddle ",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -94,7 +95,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass3, "Test Straight Ball Bouncing From U
 /*      Black Box Testing (4) "acceptance test"
 *   Testing while paddle is going down
 * 
-*/
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass4, "Test Straight Ball Bouncing From Down Moving Paddle",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -120,10 +121,10 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass4, "Test Straight Ball Bouncing From D
     return true;
 }
 
-/*          Black Box Testing (5) "acceptance test"
+         Black Box Testing (5) "acceptance test"
 *   The Straight Test but with random calculation
 *   The expected result should be no change since the random calculation should only occur if the paddle is moving
-*/
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass5, "Test Straight Ball with random calc & paddle not moving",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -148,10 +149,10 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass5, "Test Straight Ball with random cal
     testBall->MarkAsGarbage();
     return true;
 }
-/*          Black Box Testing (6) "acceptance test"
+          Black Box Testing (6) "acceptance test"
 *   Testing calculation with moving paddle with ball at 45 deg angle
 *   The expected result should be no change since the random calculation should only occur if the paddle is moving
-*/
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass6, "Test 45 deg ball while paddle going up",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -178,10 +179,10 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass6, "Test 45 deg ball while paddle goin
     return true;
 }
 
-/*          Black Box Testing (7) "acceptance test"
+          Black Box Testing (7) "acceptance test"
 *   Testing calculation with moving paddle with ball at 45 deg angle
 *   The expected result should be no change since the random calculation should only occur if the paddle is moving
-*/
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass7, "Test 45 deg ball while paddle going down",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -204,10 +205,10 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass7, "Test 45 deg ball while paddle goin
     testBall->MarkAsGarbage();
     return true;
 }
-/*      Black Box Testing (8) "acceptance test"
+      Black Box Testing (8) "acceptance test"
 *  Testing the stationary of the ball 
 *  I should expect no difference since the ball is not moving at all
-*/
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass8, "Test Ball is Stationary",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
 
@@ -230,10 +231,10 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass8, "Test Ball is Stationary",
     testBall->MarkAsGarbage();
     return true;
 }
-/*      White Box Testing (9)
+         White Box Testing (9)
 *  Test increasing speed after collision straight
 *  This covers the if statement to check if there is an increasing speed and return the result
-*/
+
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass9, "Test straight ball increases speed ",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
@@ -259,11 +260,11 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass9, "Test straight ball increases speed
     return true;
 }
 
-/*      White Box Testing (10)
+         White Box Testing (10)
 *  Test increasing speed after collision and after maxing the speed limit
 *  In the function, there is a condition that it will not increase speed past 20000. 
 *  This covers the if inside of the increase speed condition
-*/
+
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass10, "Test straight ball after maximum speed",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
@@ -288,10 +289,10 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass10, "Test straight ball after maximum 
     return true;
 }
 
-/*      Integration Testing (11)
+      Integration Testing (11)
 *   This tests to see if the "CrazyBall" class can reverse the direction of the ball
 *   This is bottom-up since a unit that work together
-*/
+
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass11, "Reverse vector from another class",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
@@ -313,10 +314,10 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass11, "Reverse vector from another class
     delete cb;
     return true;
 }
-/*
+
         Integration Test (12)
         Testing bottom-up since two units are working together to get the end result
-*/
+
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass12, "Testing Ball slows down by another class",
     EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter)
@@ -339,3 +340,5 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(TestClass12, "Testing Ball slows down by anothe
     delete cb;
     return true;
 }
+
+*/

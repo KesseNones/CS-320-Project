@@ -25,9 +25,9 @@ private:
 	FVector Velocity;
 	FVector Reflection;
 	FVector surface_normal;
-	float initSpeed = 2000.0f;
+	float initSpeed = 5000.0f;
 
-	bool bDidHit;
+	bool bDidHit, enableRandom, isIncreasingSpeed;
 	FHitResult TraceResult;
 	FCollisionQueryParams TraceParams;
 	AActor* paddleActor;
@@ -58,7 +58,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		float BounceFactor = 1.1f;
 
-	FVector onPaddleHit(FVector Reflection, FVector paddle_velocity, bool enableRandom, bool isIncreasingSpeed);
+	FVector onPaddleHit(FVector Reflection, FVector paddle_velocity);
 	FVector setBallVelocityMultiplier(FVector curr_velocity,float speedMultiplier);
 	void setBallVelocity(FVector newVelocity);
 	FVector getBallVelocity();
