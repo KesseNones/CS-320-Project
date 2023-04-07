@@ -21,9 +21,6 @@ AScoreBoard::AScoreBoard()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
-	//Root compomnent for scoreboard created.
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Default Component"));
 
 	player1Score = 0;
 	player2Score = 0;
