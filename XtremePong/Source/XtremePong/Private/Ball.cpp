@@ -2,7 +2,6 @@
 
 
 #include "Ball.h"
-#include "UObject/ConstructorHelpers.h"
 
 
 // Sets default values
@@ -12,13 +11,14 @@ ABall::ABall()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionSphere"));
-	//CollisionSphere->SetupAttachment(RootComponent);
+
 	RootComponent = CollisionSphere;
 
 	CollisionSphere->SetSimulatePhysics(true);
 	CollisionSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	CollisionSphere->SetSphereRadius(BallSize);
 	CollisionSphere->SetEnableGravity(false);
+	CollisionSphere->SetMassOverrideInKg(NAME_None, 30.0f, true);
 
 	CollisionSphere->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 
@@ -34,6 +34,8 @@ ABall::ABall()
 
 	texture->SetWorldScale3D(FVector(0.2f));
 	
+	enableRandom = true;
+	isIncreasingSpeed = false;
 }
 
 // Called when the game starts or when spawned
@@ -42,7 +44,7 @@ void ABall::BeginPlay()
 	Super::BeginPlay();
 
 	//This is the initial velocity
-	Velocity = FVector(Speed, 0.0f, 0.0f);
+	Velocity = FVector(initSpeed, 0.0f, 0.0f);
 
 }
 
@@ -50,6 +52,8 @@ void ABall::BeginPlay()
 void ABall::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	FVector TraceEnd;
+
 
 	/*
 		This section sets ball vector direction at a constant speed per tick
@@ -57,29 +61,81 @@ void ABall::Tick(float DeltaTime)
 	
 	FVector NewLocation = GetActorLocation() + Velocity * DeltaTime;
 	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), DeltaTime));
-
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Your Message"));
 	SetActorLocation(NewLocation);
 
-	// Define the origin and direction of the line trace
-	FVector TraceStart = GetActorLocation();
-	FVector TraceEnd = TraceStart + Velocity * DeltaTime*5;
-
-	// Define the parameters of the line trace
-	FCollisionQueryParams TraceParams;
+	TraceEnd = GetActorLocation() + Velocity * DeltaTime * 10;
+	
 	TraceParams.AddIgnoredActor(this);
 	// Perform the line trace
-	FHitResult TraceResult;
-	bool bDidHit = GetWorld()->LineTraceSingleByChannel(TraceResult, TraceStart, TraceEnd, ECC_Visibility, TraceParams);
 
-	FVector surface_normal = TraceResult.ImpactNormal;
-	FVector Reflection = UKismetMathLibrary::GetReflectionVector(Velocity, surface_normal);
+	bDidHit = GetWorld()->LineTraceSingleByChannel(TraceResult, GetActorLocation(), TraceEnd, ECC_Visibility, TraceParams);
+
+	surface_normal = TraceResult.ImpactNormal;
+	Reflection = UKismetMathLibrary::GetReflectionVector(Velocity, surface_normal);
 
 	//Check if the line trace hit an Actor
 	if (bDidHit) {
-
-		Reflection.Z = Velocity.Z; //Z doesn't change since we're in 2D only
-		Velocity = Reflection;
-	}
 		
+		paddleActor = TraceResult.GetActor();
+		
+		Reflection.Z = Velocity.Z; //Z doesn't change since we're in 2D only
+		
+		otherActorName = paddleActor->GetName();
+		
+		if ((*otherActorName == LeftPaddle) || (*otherActorName == RightPaddle))
+		{
+			APawn* paddle = (APawn*)paddleActor;
+			FVector paddle_vector = paddle->GetLastMovementInputVector();
+			Velocity = onPaddleHit(Reflection, paddle_vector);
+		}
+		else
+		{
+			Velocity = Reflection; //Bouncing off any actor that's not the
+		}
+	}
 }
 
+FVector ABall::setBallVelocityMultiplier(FVector curr_velocity,float speedMultiplier)
+{
+	FVector newVector = curr_velocity * abs(speedMultiplier);
+	return newVector;
+}
+
+/*		setter and getter
+*	gets the ball velocity and sets the ball velocity 
+*	since ball velocity is private in the header file 
+*/
+
+void ABall::setBallVelocity(FVector newVelocity)
+{
+	Velocity = newVelocity;
+}
+
+FVector ABall::getBallVelocity()
+{
+	return Velocity;
+}
+
+FVector ABall::onPaddleHit(FVector curr_reflect, FVector paddle_vector)
+{
+	FVector increaseVector = FVector(0.0f, 0.0f, 0.0f);
+	FVector newVector;
+	float random_angle_hit = 2000.0f;
+	//get the random float to hit at a random angle back
+	if (enableRandom) random_angle_hit = UKismetMathLibrary::RandomFloatInRange(1000.0f, 4000.0f);
+
+	newVector.X = curr_reflect.X;
+	newVector.Y = curr_reflect.Y + (paddle_vector.Y * random_angle_hit);
+	newVector.Z = curr_reflect.Z; 
+
+	//adjust the angle of the vector in respect to Y
+	if (isIncreasingSpeed) {
+		if (abs(curr_reflect.X) < 20000.0f)
+		{
+			increaseVector = setBallVelocityMultiplier(newVector, 1.2f);
+			return increaseVector;
+		}
+	}
+	return newVector;
+}
