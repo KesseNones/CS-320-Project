@@ -1,10 +1,11 @@
 //Jesse A. Jones
-//23 Mar, 2023
+//7 Apr, 2023
 //XtremePong ScoreBoard
 
 #include "ScoreBoard.h"
 #include <string>
 #include "Ball.h"
+#include <time.h>
 using namespace std;
 
 //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%s"), debugString.c_str())); //SYNTAX FOR PRINTING DEBUG MESSAGES FOR DEV!!!
@@ -25,9 +26,10 @@ AScoreBoard::AScoreBoard()
 	player1Score = 0;
 	player2Score = 0;
 	gameRound = 0;
+	previousLoser = 0;
 
 	roundWinCount = 10;
-	maxRoundCount = 3;
+	maxRoundCount = 5;
 
 	//Creates initial score text.
 	scoreText = updateScoreText("");
@@ -61,12 +63,25 @@ void AScoreBoard::BeginPlay()
 }
 
 void AScoreBoard::createBall(){
+	float ballSpeed;
+	int posOrNegVel[2] = {1, -1};
 	FVector ballLoc = FVector(0.0f, 0.0f, 20.0f);
 	FRotator ballRot = FRotator(0.0f, 0.0f, 0.0f);
 
 	//Creates ball and sets appropriate scale, position, and rotation.
 	balls[ballCount] = GetWorld()->SpawnActor<ABall>(ballLoc, ballRot);
 	balls[ballCount]->SetActorScale3D(FVector(20.0f));
+
+	//Determines which direction the ball travels after spawning.
+	if (previousLoser == 1){
+		ballSpeed = -5000.0f;
+	}else if (previousLoser == 2){
+		ballSpeed = 5000.0f;
+	}else{
+		ballSpeed = posOrNegVel[time(0) % 2] * 5000.0f; 
+	}
+
+	balls[ballCount]->setBallVelocity(FVector(ballSpeed, 0.0f, 0.0f));
 	ballCount++;
 }
 
@@ -192,6 +207,7 @@ void AScoreBoard::scoreForPlayer1(){
 	scoreText = updateScoreText("");
 	updateScoreboard(scoreText);
 	isWin();
+	previousLoser = 2;
 	createBall();
 }
 
@@ -201,5 +217,6 @@ void AScoreBoard::scoreForPlayer2(){
 	scoreText = updateScoreText("");
 	updateScoreboard(scoreText);
 	isWin();
+	previousLoser = 1;
 	createBall();
 }

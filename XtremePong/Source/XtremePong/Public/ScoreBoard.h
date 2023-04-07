@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//21 Mar, 2023
+//7 Apr, 2023
 //XtremePong
 
 #pragma once
@@ -25,6 +25,9 @@ private:
 	string scoreText;
 	UPROPERTY(VisibleAnywhere)
 	UTextRenderComponent* scoreModel;
+
+	//Tracks previous losing player in game.
+	int previousLoser;
 
 protected:
 	// Called when the game starts or when spawned
