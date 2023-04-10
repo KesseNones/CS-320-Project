@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//7 Apr, 2023
+//9 Apr, 2023
 //XtremePong ScoreBoard
 
 #include "ScoreBoard.h"
@@ -86,8 +86,13 @@ void AScoreBoard::createBall(){
 }
 
 void AScoreBoard::destroyBall(){
+	FVector actorLoc;
+	//auto splosion = GetWorld()->SpawnActor<AExplosion>();	//FECCING BORKEN
 	if (ballCount > 0){
+		actorLoc = balls[ballCount - 1]->GetActorLocation();
+		//splosion->explode(actorLoc);							//BORKED
 		GetWorld()->DestroyActor(balls[ballCount - 1]);
+		//GetWorld()->DestroyActor(splosion);	//THOROUGHLY BORKED
 		ballCount--;
 	}
 }

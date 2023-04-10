@@ -5,6 +5,7 @@
 #pragma once
 
 #include "Ball.h"
+#include "Explosion.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/TextRenderComponent.h"
