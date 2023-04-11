@@ -24,6 +24,7 @@ public:
 
 	AExplosionParticle *particleArr[12];
 	int localExplosionTickCount;
+	bool isExploding;
 
 protected:
 	// Called when the game starts or when spawned

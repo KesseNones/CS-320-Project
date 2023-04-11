@@ -70,7 +70,7 @@ void AScoreBoard::createBall(){
 
 	//Creates ball and sets appropriate scale, position, and rotation.
 	balls[ballCount] = GetWorld()->SpawnActor<ABall>(ballLoc, ballRot);
-	balls[ballCount]->SetActorScale3D(FVector(20.0f));
+	balls[ballCount]->SetActorScale3D(FVector(13.0f));
 
 	//Determines which direction the ball travels after spawning.
 	if (previousLoser == 1){
@@ -87,12 +87,20 @@ void AScoreBoard::createBall(){
 
 void AScoreBoard::destroyBall(){
 	FVector actorLoc;
-	//auto splosion = GetWorld()->SpawnActor<AExplosion>();	//FECCING BORKEN
+	auto splosion = GetWorld()->SpawnActor<AExplosion>();	//FECCING BORKEN
 	if (ballCount > 0){
 		actorLoc = balls[ballCount - 1]->GetActorLocation();
-		//splosion->explode(actorLoc);							//BORKED
+		splosion->explode(actorLoc);							//BORKED
 		GetWorld()->DestroyActor(balls[ballCount - 1]);
-		//GetWorld()->DestroyActor(splosion);	//THOROUGHLY BORKED
+
+		// //Runs ball explosion.
+		// while (true){
+		// 	if (splosion->isExploding == false){
+		// 		GetWorld()->DestroyActor(splosion);
+		// 		break;
+		// 	}
+		// }
+
 		ballCount--;
 	}
 }
