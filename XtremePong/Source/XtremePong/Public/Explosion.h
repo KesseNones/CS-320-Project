@@ -13,6 +13,8 @@
 
 #include "Explosion.generated.h"
 
+#define PARTICLE_COUNT 72
+
 UCLASS()
 class XTREMEPONG_API AExplosion : public AActor
 {
@@ -22,7 +24,7 @@ public:
 	// Sets default values for this actor's properties
 	AExplosion();
 
-	AExplosionParticle *particleArr[12];
+	AExplosionParticle *particleArr[PARTICLE_COUNT];
 	int localExplosionTickCount;
 	bool isExploding;
 

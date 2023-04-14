@@ -43,7 +43,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	int player1Score, player2Score,
-		gameRound, roundWinCount, maxRoundCount;
+		gameRound, roundWinCount, maxRoundCount, explosionCount;
 
 	//Used to track balls and the number of them on the board.
 	ABall *balls[64];

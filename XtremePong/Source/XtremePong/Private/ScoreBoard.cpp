@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//9 Apr, 2023
+//12 Apr, 2023
 //XtremePong ScoreBoard
 
 #include "ScoreBoard.h"
@@ -12,11 +12,6 @@ using namespace std;
 // GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), frameCount));
 //CREDIT: https://dev.epicgames.com/community/snippets/JvB/unreal-engine-c-print-string
 
-//ISSUES: 
-/*
-	--Make round victory text go away after x seconds.
-*/
-
 // Sets default values
 AScoreBoard::AScoreBoard()
 {
@@ -27,6 +22,8 @@ AScoreBoard::AScoreBoard()
 	player2Score = 0;
 	gameRound = 0;
 	previousLoser = 0;
+
+	explosionCount = 0;
 
 	roundWinCount = 10;
 	maxRoundCount = 5;
@@ -87,19 +84,12 @@ void AScoreBoard::createBall(){
 
 void AScoreBoard::destroyBall(){
 	FVector actorLoc;
-	auto splosion = GetWorld()->SpawnActor<AExplosion>();	//FECCING BORKEN
+	auto splosion = GetWorld()->SpawnActor<AExplosion>();
+	explosionCount++;	
 	if (ballCount > 0){
 		actorLoc = balls[ballCount - 1]->GetActorLocation();
-		splosion->explode(actorLoc);							//BORKED
+		splosion->explode(actorLoc);							
 		GetWorld()->DestroyActor(balls[ballCount - 1]);
-
-		// //Runs ball explosion.
-		// while (true){
-		// 	if (splosion->isExploding == false){
-		// 		GetWorld()->DestroyActor(splosion);
-		// 		break;
-		// 	}
-		// }
 
 		ballCount--;
 	}
@@ -215,21 +205,26 @@ void AScoreBoard::updateScoreboard(string scoreStr) {
 }
 
 void AScoreBoard::scoreForPlayer1(){
-	destroyBall();
-	incrementPlayerScore(true);
-	scoreText = updateScoreText("");
-	updateScoreboard(scoreText);
-	isWin();
-	previousLoser = 2;
-	createBall();
+	if (balls[0]->GetActorLocation()[0] >= 12000.0f){
+		destroyBall();
+		incrementPlayerScore(true);
+		scoreText = updateScoreText("");
+		updateScoreboard(scoreText);
+		isWin();
+		previousLoser = 2;
+		createBall();
+	}
+
 }
 
 void AScoreBoard::scoreForPlayer2(){
-	destroyBall();
-	incrementPlayerScore(false);
-	scoreText = updateScoreText("");
-	updateScoreboard(scoreText);
-	isWin();
-	previousLoser = 1;
-	createBall();
+	if (balls[0]->GetActorLocation()[0] <= -12000.0f){
+		destroyBall();
+		incrementPlayerScore(false);
+		scoreText = updateScoreText("");
+		updateScoreboard(scoreText);
+		isWin();
+		previousLoser = 1;
+		createBall();
+	}
 }

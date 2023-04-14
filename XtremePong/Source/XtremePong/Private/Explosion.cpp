@@ -1,9 +1,10 @@
 //Jesse A. Jones
-//9 Apr, 2023
+//13 Apr, 2023
 //Explosion Class
 
 #include "Explosion.h"
 #include "ExplosionParticle.h"
+#include <cmath>
 
 // Sets default values
 AExplosion::AExplosion()
@@ -30,8 +31,12 @@ void AExplosion::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	localExplosionTickCount++;
 
-	if (localExplosionTickCount % 250 == 0){
-		GetWorld()->DestroyActor(particleArr[0]);
+	if (localExplosionTickCount % 360 == 0){
+
+		//Destroys all explosion particles.
+		for (int i = 0; i < PARTICLE_COUNT; i++){
+			GetWorld()->DestroyActor(particleArr[i]);
+		}
 		GetWorld()->DestroyActor(this);
 		isExploding = false;
 	}
@@ -39,8 +44,22 @@ void AExplosion::Tick(float DeltaTime)
 }
 
 void AExplosion::explode(FVector explosionCoordinates){
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("BALL EXPLODES AT: %f %f %f"), explosionCoordinates[0], explosionCoordinates[1], explosionCoordinates[2]));
+	//Used for creating an explosion particle circle.
+	float tau = 6.2831853f;
+	float frac;
+	float fracDenom = PARTICLE_COUNT;
+	float velMult = 20.0f;
+
+	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("BALL EXPLODES AT: %f %f %f"), explosionCoordinates[0], explosionCoordinates[1], explosionCoordinates[2]));
 	FRotator splodeRot = FRotator(0.0f, 0.0f, 0.0f);
-	particleArr[0] = GetWorld()->SpawnActor<AExplosionParticle>(explosionCoordinates, splodeRot);
+
+	//Creates all explosion particles.
+	for (int i = 0; i < PARTICLE_COUNT; i++){
+		frac = i / fracDenom;
+		particleArr[i] = GetWorld()->SpawnActor<AExplosionParticle>(explosionCoordinates, splodeRot);
+		// auto prim = particleArr[i]->FindComponentByClass<UPrimitiveComponent>();
+		// prim->SetCollisionEnabled(ECollisionEnabled::NoCollision);										//MIGHT BE USEFUL LATER!!!
+		particleArr[i]->setParticleVelocity(FVector((velMult * cos(frac * tau)), (velMult * sin(frac * tau)), 0.0f));
+	}
 
 }

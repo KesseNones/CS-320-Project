@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//9 Apr, 2023
+//13 Apr, 2023
 //Explosion Particle Class
 
 #pragma once
@@ -8,7 +8,9 @@
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Engine/StaticMesh.h" //SUSSY
 #include "UObject/ConstructorHelpers.h"
+#include "Engine/Classes/Components/PrimitiveComponent.h"
 
 #include "Engine/EngineTypes.h"
 #include "Engine/Engine.h"
@@ -26,7 +28,9 @@ public:
 	// Sets default values for this actor's properties
 	AExplosionParticle();
 	
+	//Used to track particle location and velocity.
 	FVector particleVelocity;
+	FVector originalParticleLocation;
 
 	int particleTickCount;
 
@@ -44,5 +48,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	//Sets the velocity of the particle to the velocity passed in.
+	void setParticleVelocity(FVector newVelocity);
 
 };
