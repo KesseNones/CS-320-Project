@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//9 Apr, 2023
+//14 Apr, 2023
 //Explosion Class
 
 #pragma once
@@ -10,6 +10,9 @@
 #include "Engine/EngineTypes.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
+#include <cmath>
+#include "Sound/SoundBase.h"
+#include "Kismet/GameplayStatics.h"
 
 #include "Explosion.generated.h"
 
@@ -27,6 +30,8 @@ public:
 	AExplosionParticle *particleArr[PARTICLE_COUNT];
 	int localExplosionTickCount;
 	bool isExploding;
+
+	USoundBase* explosionSound;
 
 protected:
 	// Called when the game starts or when spawned

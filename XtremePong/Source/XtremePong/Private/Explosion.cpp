@@ -1,10 +1,9 @@
 //Jesse A. Jones
-//13 Apr, 2023
+//14 Apr, 2023
 //Explosion Class
 
 #include "Explosion.h"
 #include "ExplosionParticle.h"
-#include <cmath>
 
 // Sets default values
 AExplosion::AExplosion()
@@ -15,6 +14,9 @@ AExplosion::AExplosion()
 	localExplosionTickCount = 0;
 
 	isExploding = true;
+
+	//Loads explosion sound.
+	explosionSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/missingSound"));
 
 }
 
@@ -44,6 +46,9 @@ void AExplosion::Tick(float DeltaTime)
 }
 
 void AExplosion::explode(FVector explosionCoordinates){
+	//Plays explosion sound when explosion occurs.
+	UGameplayStatics::PlaySound2D(this, explosionSound);
+
 	//Used for creating an explosion particle circle.
 	float tau = 6.2831853f;
 	float frac;
