@@ -16,7 +16,7 @@ AExplosion::AExplosion()
 	isExploding = true;
 
 	//Loads explosion sound.
-	explosionSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/missingSound"));
+	explosionSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/ballExplosionVersion1"));
 
 }
 

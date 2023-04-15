@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//7 Apr, 2023
+//15 Apr, 2023
 //XtremePong
 
 #pragma once
@@ -48,6 +48,12 @@ public:
 	//Used to track balls and the number of them on the board.
 	ABall *balls[64];
 	int ballCount;
+
+	USoundBase* player1RoundSound;
+	USoundBase* player2RoundSound;
+
+	USoundBase* player1GameWinSound;
+	USoundBase* player2GameWinSound;
 
 	//Returns the score text when requested. 
 	// Acts as a getter method since scoreText is private.

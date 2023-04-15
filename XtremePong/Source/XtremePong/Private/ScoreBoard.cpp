@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//12 Apr, 2023
+//15 Apr, 2023
 //XtremePong ScoreBoard
 
 #include "ScoreBoard.h"
@@ -25,8 +25,8 @@ AScoreBoard::AScoreBoard()
 
 	explosionCount = 0;
 
-	roundWinCount = 10;
-	maxRoundCount = 5;
+	roundWinCount = 2;
+	maxRoundCount = 2;
 
 	//Creates initial score text.
 	scoreText = updateScoreText("");
@@ -37,15 +37,12 @@ AScoreBoard::AScoreBoard()
 
 	ballCount = 0;
 
-	// FVector loc = balls[0]->GetActorLocation();
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d %d %d"), loc[0], loc[1], loc[2]));
+	player1RoundSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/playerOneRoundVictorySound"));
+	player2RoundSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/playerTwoRoundVictorySound"));
 
-	// //FVector newLoc = FVector(0.0f, 0.0f, 20.0f);
-	// balls[0]->SetActorLocation(FVector(0.0f, 0.0f, 20.0f));
+	player1GameWinSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/playerOneGameVictory"));
+	player2GameWinSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/playerTwoGameVictory"));
 
-	// FVector loc2 = balls[0]->GetActorLocation();
-
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d %d %d"), loc[0], loc[1], loc[2]));
 }
 
 string AScoreBoard::getScoreText(){
@@ -119,9 +116,11 @@ int AScoreBoard::isWin() {
 		//If player1 wins a round, but the game isn't over, display player 1 victory.
 		//Otherwise display player 1 game victory if game is over.
 		if (gameRound < maxRoundCount){
+			UGameplayStatics::PlaySound2D(this, player1RoundSound);
 			scoreText = updateScoreText("Player 1 Wins Round " + to_string(gameRound) + "!");
 			updateScoreboard(scoreText);
 		}else{
+			UGameplayStatics::PlaySound2D(this, player1GameWinSound);
 			scoreText = updateScoreText("Player 1 Wins Game!");
 			updateScoreboard(scoreText);
 		}
@@ -135,9 +134,11 @@ int AScoreBoard::isWin() {
 		//If player2 wins a round, but the game isn't over, display player 2 victory.
 		//Otherwise display player 2 game victory.
 		if (gameRound < maxRoundCount){
+			UGameplayStatics::PlaySound2D(this, player2RoundSound);
 			scoreText = updateScoreText("Player 2 Wins Round " + to_string(gameRound) + "!");
 			updateScoreboard(scoreText);
 		}else{
+			UGameplayStatics::PlaySound2D(this, player2GameWinSound);
 			scoreText = updateScoreText("Player 2 Wins Game!");
 			updateScoreboard(scoreText);
 		}
