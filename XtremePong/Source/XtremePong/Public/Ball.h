@@ -1,4 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+/*
+	Benjamin Brickner's Ball Header File
+	Contains variables to modify the ball behavior 
+	All Rights Reserved
+*/
 
 #pragma once
 
@@ -25,12 +29,16 @@ private:
 	FVector Velocity;
 	FVector Reflection;
 	FVector surface_normal;
-	float initSpeed = 5000.0f;
+	float initSpeed = 6000.0f;
+	float curving = 0.0f;
+	float curve_multiplier = 40.0f;
 
-	bool bDidHit, enableRandom, isIncreasingSpeed;
-	FHitResult TraceResult;
+	bool bDidHit, bDidHitTop, bDidHitBottom, enableRandom, isIncreasingSpeed;
+	FHitResult TraceResult, upResult, downResult;
 	FCollisionQueryParams TraceParams;
 	AActor* paddleActor;
+	TArray<AActor*> OverlappingComponents;
+	UStaticMeshComponent* texture;
 
 	/*	Other Actor Variables */
 	FString LeftPaddle = "LeftPaddlePawn_2";	
@@ -66,6 +74,9 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	
+
+	UFUNCTION()
+		void OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+		
 
 };
