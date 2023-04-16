@@ -19,8 +19,8 @@ APowerUp::APowerUp()
 
 	//Attaching components and setting physics
 	SphereComp->SetupAttachment(RootComponent);
-	SphereComp->SetSimulatePhysics(true);
-	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	SphereComp->SetSimulatePhysics(false);
+	SphereComp->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SphereComp->SetEnableGravity(false);
 	SphereComp->SetCollisionProfileName(TEXT("OverlapAll"));
 
