@@ -78,6 +78,7 @@ public:
 	void updateScoreboard(string scoreStr);
 
 	//Creates a ball to be used in the game.
+	UFUNCTION(BlueprintCallable)
 	void createBall();
 
 	//Does the opposite of createBall, 

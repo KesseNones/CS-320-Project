@@ -25,8 +25,8 @@ AScoreBoard::AScoreBoard()
 
 	explosionCount = 0;
 
-	roundWinCount = 2;
-	maxRoundCount = 2;
+	roundWinCount = 10;
+	maxRoundCount = 3;
 
 	//Creates initial score text.
 	scoreText = updateScoreText("");
@@ -61,22 +61,28 @@ void AScoreBoard::createBall(){
 	int posOrNegVel[2] = {1, -1};
 	FVector ballLoc = FVector(0.0f, 0.0f, 20.0f);
 	FRotator ballRot = FRotator(0.0f, 0.0f, 0.0f);
+	
+	//Makes ball if there isn't one.
+	if (balls[0] == nullptr){
+		//Creates ball and sets appropriate scale, position, and rotation.
+		balls[ballCount] = GetWorld()->SpawnActor<ABall>(ballLoc, ballRot);
+		balls[ballCount]->SetActorScale3D(FVector(13.0f));
 
-	//Creates ball and sets appropriate scale, position, and rotation.
-	balls[ballCount] = GetWorld()->SpawnActor<ABall>(ballLoc, ballRot);
-	balls[ballCount]->SetActorScale3D(FVector(13.0f));
+		//Determines which direction the ball travels after spawning.
+		if (previousLoser == 1){
+			ballSpeed = -5000.0f;
+		}else if (previousLoser == 2){
+			ballSpeed = 5000.0f;
+		}else{
+			ballSpeed = posOrNegVel[time(0) % 2] * 5000.0f; 
+		}
 
-	//Determines which direction the ball travels after spawning.
-	if (previousLoser == 1){
-		ballSpeed = -5000.0f;
-	}else if (previousLoser == 2){
-		ballSpeed = 5000.0f;
-	}else{
-		ballSpeed = posOrNegVel[time(0) % 2] * 5000.0f; 
+		balls[ballCount]->setBallVelocity(FVector(ballSpeed, 0.0f, 0.0f));
+		ballCount++;
+
 	}
 
-	balls[ballCount]->setBallVelocity(FVector(ballSpeed, 0.0f, 0.0f));
-	ballCount++;
+
 }
 
 void AScoreBoard::destroyBall(){
@@ -87,6 +93,7 @@ void AScoreBoard::destroyBall(){
 		actorLoc = balls[ballCount - 1]->GetActorLocation();
 		splosion->explode(actorLoc);							
 		GetWorld()->DestroyActor(balls[ballCount - 1]);
+		balls[ballCount - 1] = nullptr;
 
 		ballCount--;
 	}
@@ -213,7 +220,6 @@ void AScoreBoard::scoreForPlayer1(){
 		updateScoreboard(scoreText);
 		isWin();
 		previousLoser = 2;
-		createBall();
 	}
 
 }
@@ -226,6 +232,5 @@ void AScoreBoard::scoreForPlayer2(){
 		updateScoreboard(scoreText);
 		isWin();
 		previousLoser = 1;
-		createBall();
 	}
 }
