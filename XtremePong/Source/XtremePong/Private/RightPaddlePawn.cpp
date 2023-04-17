@@ -19,7 +19,7 @@ ARightPaddlePawn::ARightPaddlePawn()
 
 	// Create instance of movement component and tell it to update the root
 	PaddleMovementComponent = CreateDefaultSubobject<UPaddleMovementComponent>(TEXT("PaddleMovementComponent"));
-	PaddleMovementComponent->UpdatedComponent = RootComponent;
+	PaddleMovementComponent->SetUpdatedComponent(RootComponent);
 
 }
 

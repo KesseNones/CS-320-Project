@@ -14,10 +14,15 @@ class XTREMEPONG_API UPaddleMovementComponent : public UPawnMovementComponent
 {
 	GENERATED_BODY()
 
+protected:
+	
+
 public:
 	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	// Makes this variable editable in the editor
 	UPROPERTY(EditAnywhere)
 		float SpeedMultiplier = 500.0f;
+
+	bool bIsValid, bWouldMove, bIsHitting;
 };
