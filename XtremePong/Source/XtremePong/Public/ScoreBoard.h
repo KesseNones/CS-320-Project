@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//15 Apr, 2023
+//16 Apr, 2023
 //XtremePong
 
 #pragma once
@@ -48,6 +48,8 @@ public:
 	//Used to track balls and the number of them on the board.
 	ABall *balls[64];
 	int ballCount;
+
+	bool isGameEnd;
 
 	USoundBase* player1RoundSound;
 	USoundBase* player2RoundSound;

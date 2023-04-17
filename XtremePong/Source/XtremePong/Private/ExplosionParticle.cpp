@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//13 Apr, 2023
+//16 Apr, 2023
 //Explosion Particle Class
 
 #include "ExplosionParticle.h"
@@ -19,8 +19,8 @@ AExplosionParticle::AExplosionParticle()
 	particleTexture = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Meshy"));
 	particleTexture->SetupAttachment(particleBody);
 
-	UPrimitiveComponent* PrimitiveComponent = this->FindComponentByClass<UPrimitiveComponent>();							//POTENTIALLY USEFUL (DOESNT SEEM TO WORK)
-
+	//Explicitly disables collision of explosion particle.
+	UPrimitiveComponent* PrimitiveComponent = this->FindComponentByClass<UPrimitiveComponent>();
 	if (PrimitiveComponent){
 		PrimitiveComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
@@ -40,7 +40,6 @@ void AExplosionParticle::BeginPlay()
 {
 	Super::BeginPlay();
 	originalParticleLocation = GetActorLocation();
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("COORDINATES SET TO: %f %f %f"), originalParticleLocation[0], originalParticleLocation[1], originalParticleLocation[2]));
 	
 }
 
@@ -48,8 +47,6 @@ void AExplosionParticle::BeginPlay()
 void AExplosionParticle::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Original LOC: %f %f %f %d"), originalParticleLocation[0], originalParticleLocation[1], originalParticleLocation[2], particleTickCount));
 
 	FVector newParticleLocation;
 
