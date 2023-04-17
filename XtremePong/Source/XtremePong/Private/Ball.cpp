@@ -5,6 +5,7 @@
 
 
 #include "Ball.h"
+#include "PowerUp.h"
 
 
 //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), DeltaTime));
@@ -206,4 +207,9 @@ FVector ABall::onPaddleHit(FVector curr_reflect, FVector paddle_vector)
 		}
 	}
 	return newVector;
+}
+
+// Returns the last paddle the ball hit
+AActor* ABall::getPaddleHit() {
+    return paddleActor;
 }
