@@ -7,6 +7,8 @@
 #include "ScoreBoard.h"
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "GameFramework/Actor.h"
+#include "Kismet/GameplayStatics.h"
 #include "ReplayGameInstance.generated.h"
 
 /**
@@ -22,7 +24,7 @@ public:
 
 	UReplayGameInstance();
 
-		UPROPERTY(EditDefaultsOnly, Category = "XtremePong")
+	UPROPERTY(EditDefaultsOnly, Category = "XtremePong")
 		FString replayName;
 
 	UPROPERTY(EditDefaultsOnly, Category = "XtremePong")
@@ -40,9 +42,11 @@ public:
 	void paddleInit();
 	void camInit();
 	int createReplay();
+	int recordPositions();
 	int loadReplay();
 	int stopReplay();
 	int errHandler();
+	void waitFunc();
 
 	int iLPaddleX;
 	int iLPaddleY;
@@ -58,12 +62,26 @@ public:
 	int iCamFOV;
 
 	int replayLength;
+	int loadedLength;
+	int recorded;
+
+	TArray<ARightPaddlePawn*> rPawn;
+	TArray<ALeftPaddlePawn*> lPawn;
 
 	TArray<int> LPaddlePos;
 	TArray<int> RPaddlePos;
 	TArray<int> BallPosX;
 	TArray<int> BallPosY;
 	TArray<int> Ticks;
+	
+
+	void Init() override;
+
+	void Shutdown() override;
+
+	bool Tick(float DeltaSeconds);
+
+	FDelegateHandle TickDelegateHandle;
 
 
 };
