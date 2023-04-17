@@ -5,7 +5,6 @@
 
 
 #include "Ball.h"
-#include "PowerUp.h"
 
 
 //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), DeltaTime));
@@ -50,6 +49,7 @@ ABall::ABall()
 
 	CollisionSphere->OnComponentBeginOverlap.AddDynamic(this, &ABall::OnOverlapBegin);
 
+	hitSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/ballHitSound"));
 	enableRandom = true;
 	isIncreasingSpeed = false;
 }
@@ -82,11 +82,12 @@ void ABall::Tick(float DeltaTime)
 
 	TraceEnd = GetActorLocation() + Velocity * DeltaTime;
 
-	FVector up = UKismetMathLibrary::RotateAngleAxis(Velocity, -30.0f, FVector(0.0f, 0.0f, 1.0f));
-	TraceTop = GetActorLocation() + up * DeltaTime * 2;
+	FVector up = UKismetMathLibrary::RotateAngleAxis(Velocity, -45.0f, FVector(0.0f, 0.0f, 1.0f));
+	TraceTop = GetActorLocation() + up * DeltaTime * 3;
 
-	FVector down = UKismetMathLibrary::RotateAngleAxis(Velocity, 30.0f, FVector(0.0f, 0.0f, 1.0f));
-	TraceBottom = GetActorLocation() + down * DeltaTime * 2;
+	FVector down = UKismetMathLibrary::RotateAngleAxis(Velocity, 45.0f, FVector(0.0f, 0.0f, 1.0f));
+	TraceBottom = GetActorLocation() + down * DeltaTime * 3;
+
 
 	TraceParams.AddIgnoredActor(this);
 
@@ -98,9 +99,12 @@ void ABall::Tick(float DeltaTime)
 	Reflection = UKismetMathLibrary::GetReflectionVector(Velocity, surface_normal);
 
 	//Check if the line trace hit an Actor
-	
+
 	if (bDidHit || bDidHitTop || bDidHitBottom) {
 		Reflection.Z = Velocity.Z; //Z doesn't change since we're in 2D only
+		
+		// Play the sound effect
+		UGameplayStatics::PlaySound2D(this, hitSound);
 
 		//checking angles and getting the actor from whichever 
 		if (bDidHit) paddleActor = TraceResult.GetActor();
@@ -113,7 +117,6 @@ void ABall::Tick(float DeltaTime)
 		{
 			APawn* paddle = (APawn*)paddleActor;
 			FVector paddle_vector = paddle->GetLastMovementInputVector();
-			curving = paddle_vector.Y * curve_multiplier * -1;
 			Velocity = onPaddleHit(Reflection, paddle_vector);
 		}
 		else
@@ -131,34 +134,48 @@ void ABall::Tick(float DeltaTime)
 	
 }
 
+/*
+*		This doesn't seem to work since event stuff not working for me 
+*/
 void ABall::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Collision detected"));
 }
 
-
+/* 	
+ *	sets the ball velocity multiplier (IMPORTANT: this only works if "increasingSpeed" is enabled)	
+ */
 FVector ABall::setBallVelocityMultiplier(FVector curr_velocity,float speedMultiplier)
 {
 	FVector newVector = curr_velocity * abs(speedMultiplier);
 	return newVector;
 }
 
+//adjusts the curve strength
+void ABall::setCurveStrength(float newValue)
+{
+	curving = newValue;
+}
 
-/*		setter and getter
-*	gets the ball velocity and sets the ball velocity 
-*	since ball velocity is private in the header file 
-*/
-
+// sets the ball's current velocity
 void ABall::setBallVelocity(FVector newVelocity)
 {
 	Velocity = newVelocity;
 }
 
+// gets the current ball's velocity
 FVector ABall::getBallVelocity()
 {
 	return Velocity;
 }
 
+
+/*
+ * 	onPaddleHit Function that returns a new resultant vector after hiting the ball
+ *	This is not an event, this is a function called from the tick function that calculates
+ *	the new vector dependent on variables such as, if the paddle was moving during the collision
+ *	and the random function calculating a value to make the return vector not boring *shrugs*
+*/
 FVector ABall::onPaddleHit(FVector curr_reflect, FVector paddle_vector)
 {
 	FVector increaseVector = FVector(0.0f, 0.0f, 0.0f);
@@ -169,14 +186,16 @@ FVector ABall::onPaddleHit(FVector curr_reflect, FVector paddle_vector)
 
 	newVector.X = curr_reflect.X;
 
-	if (paddle_vector.Y != 0.0f)
+	if (paddle_vector.Y != 0.0f) {
 		//adjust new Y velocity if paddle was moving 
 		newVector.Y = curr_reflect.Y + (paddle_vector.Y * random_angle_hit);
-	else
+		//modify the curving strength
+		curving = curving + paddle_vector.Y * curve_multiplier * -1;
+	} else {
 		//ball straightens out if paddle was not moving
-		newVector.Y = curr_reflect.Y / 1.5f;
-
-	newVector.Z = curr_reflect.Z;
+		newVector.Y = curr_reflect.Y / 1.2f;
+	}
+	newVector.Z = curr_reflect.Z; 
 
 	//adjust the angle of the vector in respect to Y
 	if (isIncreasingSpeed) {
@@ -187,9 +206,4 @@ FVector ABall::onPaddleHit(FVector curr_reflect, FVector paddle_vector)
 		}
 	}
 	return newVector;
-}
-
-// Returns the last paddle the ball hit
-AActor* ABall::getPaddleHit() {
-	return paddleActor;
 }
