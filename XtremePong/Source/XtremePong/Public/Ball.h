@@ -17,6 +17,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "LeftPaddlePawn.h"
 #include "RightPaddlePawn.h"
+#include "Sound/SoundBase.h"
 
 #include "Ball.generated.h"
 
@@ -31,7 +32,7 @@ private:
 	FVector surface_normal;
 	float initSpeed = 6000.0f;
 	float curving = 0.0f;
-	float curve_multiplier = 40.0f;
+	float curve_multiplier = 10.0f;
 
 	bool bDidHit, bDidHitTop, bDidHitBottom, enableRandom, isIncreasingSpeed;
 	FHitResult TraceResult, upResult, downResult;
@@ -39,6 +40,8 @@ private:
 	AActor* paddleActor;
 	TArray<AActor*> OverlappingComponents;
 	UStaticMeshComponent* texture;
+
+	USoundBase* hitSound;
 
 	/*	Other Actor Variables */
 	FString LeftPaddle = "LeftPaddlePawn_2";	
@@ -70,6 +73,7 @@ public:
 	FVector setBallVelocityMultiplier(FVector curr_velocity,float speedMultiplier);
 	void setBallVelocity(FVector newVelocity);
 	FVector getBallVelocity();
+	void setCurveStrength(float newValue);
 
 protected:
 	// Called when the game starts or when spawned
