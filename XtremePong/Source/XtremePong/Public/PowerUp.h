@@ -11,7 +11,8 @@ UCLASS()
 class XTREMEPONG_API APowerUp : public AActor
 {
 	GENERATED_BODY()
-	
+
+
 public:	
 	// Sets default values for this actor's properties
 	APowerUp();
@@ -19,6 +20,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void ActivatePower(AActor* Paddle);
 
 	UPROPERTY(EditAnywhere)
 		class USphereComponent* SphereComp;
@@ -28,6 +31,8 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 		class UParticleSystemComponent* ParticleComp;
+
+	AActor* HitObject;
 
 public:	
 	// Called every frame

@@ -5,6 +5,7 @@
 
 
 #include "Ball.h"
+#include "PowerUp.h"
 
 
 //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), DeltaTime));
@@ -87,7 +88,6 @@ void ABall::Tick(float DeltaTime)
 	FVector down = UKismetMathLibrary::RotateAngleAxis(Velocity, 30.0f, FVector(0.0f, 0.0f, 1.0f));
 	TraceBottom = GetActorLocation() + down * DeltaTime * 2;
 
-
 	TraceParams.AddIgnoredActor(this);
 
 	bDidHit = GetWorld()->LineTraceSingleByChannel(TraceResult, GetActorLocation(), TraceEnd, ECC_Visibility, TraceParams);
@@ -101,7 +101,7 @@ void ABall::Tick(float DeltaTime)
 	
 	if (bDidHit || bDidHitTop || bDidHitBottom) {
 		Reflection.Z = Velocity.Z; //Z doesn't change since we're in 2D only
-		
+
 		//checking angles and getting the actor from whichever 
 		if (bDidHit) paddleActor = TraceResult.GetActor();
 		else if (bDidHitTop) paddleActor = upResult.GetActor();
@@ -176,7 +176,7 @@ FVector ABall::onPaddleHit(FVector curr_reflect, FVector paddle_vector)
 		//ball straightens out if paddle was not moving
 		newVector.Y = curr_reflect.Y / 1.5f;
 
-	newVector.Z = curr_reflect.Z; 
+	newVector.Z = curr_reflect.Z;
 
 	//adjust the angle of the vector in respect to Y
 	if (isIncreasingSpeed) {
@@ -187,4 +187,9 @@ FVector ABall::onPaddleHit(FVector curr_reflect, FVector paddle_vector)
 		}
 	}
 	return newVector;
+}
+
+// Returns the last paddle the ball hit
+AActor* ABall::getPaddleHit() {
+	return paddleActor;
 }

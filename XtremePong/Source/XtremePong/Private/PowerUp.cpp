@@ -4,6 +4,7 @@
 #include "PowerUp.h"
 #include "Components/SphereComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Ball.h"
 
 // Sets default values
 APowerUp::APowerUp()
@@ -47,5 +48,18 @@ void APowerUp::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Get the ball that overlaps this power up, then get the last paddle it hit
+	TArray<ABall*> Balls;
+	this->GetOverlappingActors((TArray<AActor *> &) Balls, ABall::StaticClass());
+	if (!Balls.IsEmpty()) {
+		HitObject = Balls[0]->getPaddleHit();
+
+		// If a paddle last hit the ball before it overlapped the PowerUp,
+		// give that paddle the power.
+		if (HitObject->GetClass() == ALeftPaddlePawn::StaticClass() || HitObject->GetClass() == ARightPaddlePawn::StaticClass()) {
+			ActivatePower(HitObject);
+		}
+	}	
 }
 
+void APowerUp::ActivatePower(AActor* Paddle) {}

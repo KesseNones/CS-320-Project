@@ -4,6 +4,7 @@
 #include "PowerUpSpawner.h"
 #include "Components/BoxComponent.h"
 #include "PowerUp.h"
+#include "EmbiggenPowerUp.h"
 #include <Kismet/KismetMathLibrary.h>
 
 // Sets default values
@@ -39,7 +40,7 @@ void APowerUpSpawner::SpawnPowerUp() {
 	FVector SpawnLocation = UKismetMathLibrary::RandomPointInBoundingBox(GetActorLocation(), BoxExtent);
 	FRotator SpawnRotation = GetActorRotation();
 
-	GetWorld()->SpawnActor<APowerUp>(SpawnLocation, SpawnRotation);
+	GetWorld()->SpawnActor<AEmbiggenPowerUp>(SpawnLocation, SpawnRotation);
 }
 
 float APowerUpSpawner::GetSpawnRate() {

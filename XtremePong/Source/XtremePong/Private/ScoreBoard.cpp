@@ -64,7 +64,7 @@ void AScoreBoard::BeginPlay()
 }
 
 void AScoreBoard::createBall(){
-	FVector ballLoc = FVector(0.0f, 0.0f, 20.0f);
+	FVector ballLoc = FVector(0.0f, 0.0f, 1000.0f);
 	FRotator ballRot = FRotator(0.0f, 0.0f, 0.0f);
 
 	//Creates ball and sets appropriate scale, position, and rotation.

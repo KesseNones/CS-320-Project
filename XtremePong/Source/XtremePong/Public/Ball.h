@@ -71,6 +71,8 @@ public:
 	void setBallVelocity(FVector newVelocity);
 	FVector getBallVelocity();
 
+	AActor* getPaddleHit();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
