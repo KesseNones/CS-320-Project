@@ -55,15 +55,12 @@ void AExplosion::explode(FVector explosionCoordinates){
 	float fracDenom = PARTICLE_COUNT;
 	float velMult = 20.0f;
 
-	//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("BALL EXPLODES AT: %f %f %f"), explosionCoordinates[0], explosionCoordinates[1], explosionCoordinates[2]));
 	FRotator splodeRot = FRotator(0.0f, 0.0f, 0.0f);
 
 	//Creates all explosion particles.
 	for (int i = 0; i < PARTICLE_COUNT; i++){
 		frac = i / fracDenom;
 		particleArr[i] = GetWorld()->SpawnActor<AExplosionParticle>(explosionCoordinates, splodeRot);
-		// auto prim = particleArr[i]->FindComponentByClass<UPrimitiveComponent>();
-		// prim->SetCollisionEnabled(ECollisionEnabled::NoCollision);										//MIGHT BE USEFUL LATER!!!
 		particleArr[i]->setParticleVelocity(FVector((velMult * cos(frac * tau)), (velMult * sin(frac * tau)), 0.0f));
 	}
 

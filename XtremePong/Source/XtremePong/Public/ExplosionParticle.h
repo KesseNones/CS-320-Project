@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//13 Apr, 2023
+//16 Apr, 2023
 //Explosion Particle Class
 
 #pragma once
@@ -8,7 +8,7 @@
 #include "GameFramework/Actor.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Engine/StaticMesh.h" //SUSSY
+#include "Engine/StaticMesh.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Engine/Classes/Components/PrimitiveComponent.h"
 
