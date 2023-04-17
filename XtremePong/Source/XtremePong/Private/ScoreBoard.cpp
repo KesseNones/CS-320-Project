@@ -43,6 +43,8 @@ AScoreBoard::AScoreBoard()
 	player1GameWinSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/playerOneGameVictory"));
 	player2GameWinSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/playerTwoGameVictory"));
 
+	isGameEnd = false;
+
 }
 
 string AScoreBoard::getScoreText(){
@@ -62,8 +64,8 @@ void AScoreBoard::createBall(){
 	FVector ballLoc = FVector(0.0f, 0.0f, 20.0f);
 	FRotator ballRot = FRotator(0.0f, 0.0f, 0.0f);
 	
-	//Makes ball if there isn't one.
-	if (balls[0] == nullptr){
+	//Makes ball if there isn't one and the game isn't over.
+	if ((balls[0] == nullptr) && !(isGameEnd)){
 		//Creates ball and sets appropriate scale, position, and rotation.
 		balls[ballCount] = GetWorld()->SpawnActor<ABall>(ballLoc, ballRot);
 		balls[ballCount]->SetActorScale3D(FVector(13.0f));
@@ -79,6 +81,9 @@ void AScoreBoard::createBall(){
 
 		balls[ballCount]->setBallVelocity(FVector(ballSpeed, 0.0f, 0.0f));
 		ballCount++;
+
+		scoreText = updateScoreText("");
+		updateScoreboard(scoreText);
 
 	}
 
@@ -130,6 +135,7 @@ int AScoreBoard::isWin() {
 			UGameplayStatics::PlaySound2D(this, player1GameWinSound);
 			scoreText = updateScoreText("Player 1 Wins Game!");
 			updateScoreboard(scoreText);
+			isGameEnd = true;
 		}
 		return 1;
 	}
@@ -148,6 +154,7 @@ int AScoreBoard::isWin() {
 			UGameplayStatics::PlaySound2D(this, player2GameWinSound);
 			scoreText = updateScoreText("Player 2 Wins Game!");
 			updateScoreboard(scoreText);
+			isGameEnd = true;
 		}
 		return 2;
 	}

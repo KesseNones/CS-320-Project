@@ -49,6 +49,8 @@ public:
 	ABall *balls[64];
 	int ballCount;
 
+	bool isGameEnd;
+
 	USoundBase* player1RoundSound;
 	USoundBase* player2RoundSound;
 
