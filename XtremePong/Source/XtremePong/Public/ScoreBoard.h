@@ -1,10 +1,11 @@
 //Jesse A. Jones
-//21 Mar, 2023
+//15 Apr, 2023
 //XtremePong
 
 #pragma once
 
 #include "Ball.h"
+#include "Explosion.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Components/TextRenderComponent.h"
@@ -26,6 +27,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UTextRenderComponent* scoreModel;
 
+	//Tracks previous losing player in game.
+	int previousLoser;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -39,11 +43,17 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	int player1Score, player2Score,
-		gameRound, roundWinCount, maxRoundCount;
+		gameRound, roundWinCount, maxRoundCount, explosionCount;
 
 	//Used to track balls and the number of them on the board.
 	ABall *balls[64];
 	int ballCount;
+
+	USoundBase* player1RoundSound;
+	USoundBase* player2RoundSound;
+
+	USoundBase* player1GameWinSound;
+	USoundBase* player2GameWinSound;
 
 	//Returns the score text when requested. 
 	// Acts as a getter method since scoreText is private.
@@ -68,6 +78,7 @@ public:
 	void updateScoreboard(string scoreStr);
 
 	//Creates a ball to be used in the game.
+	UFUNCTION(BlueprintCallable)
 	void createBall();
 
 	//Does the opposite of createBall, 

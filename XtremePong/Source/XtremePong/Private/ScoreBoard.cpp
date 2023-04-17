@@ -1,33 +1,29 @@
 //Jesse A. Jones
-//23 Mar, 2023
+//15 Apr, 2023
 //XtremePong ScoreBoard
 
 #include "ScoreBoard.h"
 #include <string>
 #include "Ball.h"
+#include <time.h>
 using namespace std;
 
 //GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%s"), debugString.c_str())); //SYNTAX FOR PRINTING DEBUG MESSAGES FOR DEV!!!
 // GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), frameCount));
 //CREDIT: https://dev.epicgames.com/community/snippets/JvB/unreal-engine-c-print-string
 
-//ISSUES: 
-/*
-	--Make round victory text go away after x seconds.
-*/
-
 // Sets default values
 AScoreBoard::AScoreBoard()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	
-	//Root compomnent for scoreboard created.
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Default Component"));
 
 	player1Score = 0;
 	player2Score = 0;
 	gameRound = 0;
+	previousLoser = 0;
+
+	explosionCount = 0;
 
 	roundWinCount = 10;
 	maxRoundCount = 3;
@@ -41,15 +37,12 @@ AScoreBoard::AScoreBoard()
 
 	ballCount = 0;
 
-	// FVector loc = balls[0]->GetActorLocation();
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d %d %d"), loc[0], loc[1], loc[2]));
+	player1RoundSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/playerOneRoundVictorySound"));
+	player2RoundSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/playerTwoRoundVictorySound"));
 
-	// //FVector newLoc = FVector(0.0f, 0.0f, 20.0f);
-	// balls[0]->SetActorLocation(FVector(0.0f, 0.0f, 20.0f));
+	player1GameWinSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/playerOneGameVictory"));
+	player2GameWinSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/playerTwoGameVictory"));
 
-	// FVector loc2 = balls[0]->GetActorLocation();
-
-	// GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d %d %d"), loc[0], loc[1], loc[2]));
 }
 
 string AScoreBoard::getScoreText(){
@@ -64,18 +57,44 @@ void AScoreBoard::BeginPlay()
 }
 
 void AScoreBoard::createBall(){
+	float ballSpeed;
+	int posOrNegVel[2] = {1, -1};
 	FVector ballLoc = FVector(0.0f, 0.0f, 20.0f);
 	FRotator ballRot = FRotator(0.0f, 0.0f, 0.0f);
+	
+	//Makes ball if there isn't one.
+	if (balls[0] == nullptr){
+		//Creates ball and sets appropriate scale, position, and rotation.
+		balls[ballCount] = GetWorld()->SpawnActor<ABall>(ballLoc, ballRot);
+		balls[ballCount]->SetActorScale3D(FVector(13.0f));
 
-	//Creates ball and sets appropriate scale, position, and rotation.
-	balls[ballCount] = GetWorld()->SpawnActor<ABall>(ballLoc, ballRot);
-	balls[ballCount]->SetActorScale3D(FVector(20.0f));
-	ballCount++;
+		//Determines which direction the ball travels after spawning.
+		if (previousLoser == 1){
+			ballSpeed = -5000.0f;
+		}else if (previousLoser == 2){
+			ballSpeed = 5000.0f;
+		}else{
+			ballSpeed = posOrNegVel[time(0) % 2] * 5000.0f; 
+		}
+
+		balls[ballCount]->setBallVelocity(FVector(ballSpeed, 0.0f, 0.0f));
+		ballCount++;
+
+	}
+
+
 }
 
 void AScoreBoard::destroyBall(){
+	FVector actorLoc;
+	auto splosion = GetWorld()->SpawnActor<AExplosion>();
+	explosionCount++;	
 	if (ballCount > 0){
+		actorLoc = balls[ballCount - 1]->GetActorLocation();
+		splosion->explode(actorLoc);							
 		GetWorld()->DestroyActor(balls[ballCount - 1]);
+		balls[ballCount - 1] = nullptr;
+
 		ballCount--;
 	}
 }
@@ -104,9 +123,11 @@ int AScoreBoard::isWin() {
 		//If player1 wins a round, but the game isn't over, display player 1 victory.
 		//Otherwise display player 1 game victory if game is over.
 		if (gameRound < maxRoundCount){
+			UGameplayStatics::PlaySound2D(this, player1RoundSound);
 			scoreText = updateScoreText("Player 1 Wins Round " + to_string(gameRound) + "!");
 			updateScoreboard(scoreText);
 		}else{
+			UGameplayStatics::PlaySound2D(this, player1GameWinSound);
 			scoreText = updateScoreText("Player 1 Wins Game!");
 			updateScoreboard(scoreText);
 		}
@@ -120,9 +141,11 @@ int AScoreBoard::isWin() {
 		//If player2 wins a round, but the game isn't over, display player 2 victory.
 		//Otherwise display player 2 game victory.
 		if (gameRound < maxRoundCount){
+			UGameplayStatics::PlaySound2D(this, player2RoundSound);
 			scoreText = updateScoreText("Player 2 Wins Round " + to_string(gameRound) + "!");
 			updateScoreboard(scoreText);
 		}else{
+			UGameplayStatics::PlaySound2D(this, player2GameWinSound);
 			scoreText = updateScoreText("Player 2 Wins Game!");
 			updateScoreboard(scoreText);
 		}
@@ -190,19 +213,24 @@ void AScoreBoard::updateScoreboard(string scoreStr) {
 }
 
 void AScoreBoard::scoreForPlayer1(){
-	destroyBall();
-	incrementPlayerScore(true);
-	scoreText = updateScoreText("");
-	updateScoreboard(scoreText);
-	isWin();
-	createBall();
+	if (balls[0]->GetActorLocation()[0] >= 12000.0f){
+		destroyBall();
+		incrementPlayerScore(true);
+		scoreText = updateScoreText("");
+		updateScoreboard(scoreText);
+		isWin();
+		previousLoser = 2;
+	}
+
 }
 
 void AScoreBoard::scoreForPlayer2(){
-	destroyBall();
-	incrementPlayerScore(false);
-	scoreText = updateScoreText("");
-	updateScoreboard(scoreText);
-	isWin();
-	createBall();
+	if (balls[0]->GetActorLocation()[0] <= -12000.0f){
+		destroyBall();
+		incrementPlayerScore(false);
+		scoreText = updateScoreText("");
+		updateScoreboard(scoreText);
+		isWin();
+		previousLoser = 1;
+	}
 }
