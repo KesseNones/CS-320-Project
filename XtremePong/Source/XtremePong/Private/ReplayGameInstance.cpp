@@ -69,6 +69,7 @@ int UReplayGameInstance::recordPositions() {
 	// Add BallX
 	// Add BallY
 	// Check scoreboard. If won, set recorded = 1.
+	return 1;
 }
 
 bool UReplayGameInstance::Tick(float DeltaSeconds) {
