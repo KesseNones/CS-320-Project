@@ -4,11 +4,13 @@
 
 #include "LeftPaddlePawn.h"
 #include "RightPaddlePawn.h"
+#include "Ball.h"
 #include "ScoreBoard.h"
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
 #include "GameFramework/Actor.h"
 #include "Kismet/GameplayStatics.h"
+#include "Containers/Ticker.h"
 #include "ReplayGameInstance.generated.h"
 
 /**
@@ -67,6 +69,8 @@ public:
 
 	TArray<ARightPaddlePawn*> rPawn;
 	TArray<ALeftPaddlePawn*> lPawn;
+	TArray<ABall*> Ball;
+	TArray<AScoreBoard*> ScoreBoard;
 
 	TArray<int> LPaddlePos;
 	TArray<int> RPaddlePos;
@@ -81,7 +85,7 @@ public:
 
 	bool Tick(float DeltaSeconds);
 
-	FDelegateHandle TickDelegateHandle;
+	FTSTicker::FDelegateHandle TickDelegateHandle;
 
 
 };
