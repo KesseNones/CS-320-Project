@@ -23,8 +23,6 @@ AScoreBoard::AScoreBoard()
 	gameRound = 0;
 	previousLoser = 0;
 
-	explosionCount = 0;
-
 	roundWinCount = 10;
 	maxRoundCount = 3;
 
@@ -43,7 +41,10 @@ AScoreBoard::AScoreBoard()
 	player1GameWinSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/playerOneGameVictory"));
 	player2GameWinSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/playerTwoGameVictory"));
 
+	//Used in ball explosion stuff.
 	isGameEnd = false;
+	ballHasExploded = false;
+	tickCount = 0;
 
 }
 
@@ -93,12 +94,11 @@ void AScoreBoard::createBall(){
 void AScoreBoard::destroyBall(){
 	FVector actorLoc;
 	auto splosion = GetWorld()->SpawnActor<AExplosion>();
-	explosionCount++;	
 	if (ballCount > 0){
 		actorLoc = balls[ballCount - 1]->GetActorLocation();
 		splosion->explode(actorLoc);							
-		GetWorld()->DestroyActor(balls[ballCount - 1]);
-		balls[ballCount - 1] = nullptr;
+		GetWorld()->DestroyActor(balls[0]);
+		balls[0] = nullptr;
 
 		ballCount--;
 	}
@@ -108,6 +108,13 @@ void AScoreBoard::destroyBall(){
 void AScoreBoard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (ballHasExploded && tickCount % 400 == 0){
+		createBall();
+		ballHasExploded = false;
+	}
+
+	tickCount++;
 
 }
 
@@ -220,7 +227,9 @@ void AScoreBoard::updateScoreboard(string scoreStr) {
 }
 
 void AScoreBoard::scoreForPlayer1(){
-	if (balls[0]->GetActorLocation()[0] >= 12000.0f){
+	if ((balls[0] != nullptr) && (balls[0]->GetActorLocation()[0] >= 12000.0f)){
+		tickCount = 1;
+		ballHasExploded = true;
 		destroyBall();
 		incrementPlayerScore(true);
 		scoreText = updateScoreText("");
@@ -232,7 +241,9 @@ void AScoreBoard::scoreForPlayer1(){
 }
 
 void AScoreBoard::scoreForPlayer2(){
-	if (balls[0]->GetActorLocation()[0] <= -12000.0f){
+	if ((balls[0] != nullptr) && (balls[0]->GetActorLocation()[0] <= -12000.0f)){
+		tickCount = 1;
+		ballHasExploded = true;
 		destroyBall();
 		incrementPlayerScore(false);
 		scoreText = updateScoreText("");
