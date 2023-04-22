@@ -53,7 +53,7 @@ void AExplosion::explode(FVector explosionCoordinates){
 	float tau = 6.2831853f;
 	float frac;
 	float fracDenom = PARTICLE_COUNT;
-	float velMult = 20.0f;
+	float velMult = 60.0f;
 
 	FRotator splodeRot = FRotator(0.0f, 0.0f, 0.0f);
 
