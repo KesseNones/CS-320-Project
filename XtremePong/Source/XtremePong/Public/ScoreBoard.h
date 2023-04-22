@@ -13,6 +13,9 @@
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 
+#include <ctime>
+#include <cstdlib>
+
 #include "Kismet/GameplayStatics.h"
 
 #include "ScoreBoard.generated.h"
@@ -98,5 +101,9 @@ public:
 	//Called when player2 scores a goal.
 	UFUNCTION(BlueprintCallable)
 	void scoreForPlayer2();
+
+	//Spawns "fireworks" around the victorious player's paddle. 
+	// Showing just how great they are.
+	void spawnFireworks(bool isPlayerOne);
 
 };

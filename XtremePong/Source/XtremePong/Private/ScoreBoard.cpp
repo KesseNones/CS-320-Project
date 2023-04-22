@@ -92,15 +92,48 @@ void AScoreBoard::createBall(){
 
 void AScoreBoard::destroyBall(){
 	FVector actorLoc;
-	auto splosion = GetWorld()->SpawnActor<AExplosion>();
 
 	//If a ball exists, destroy it and spawn an explosion there.
 	if (ball != nullptr){
+		auto splosion = GetWorld()->SpawnActor<AExplosion>();
 		actorLoc = ball->GetActorLocation();
 		splosion->explode(actorLoc);							
 		GetWorld()->DestroyActor(ball);
 		ball = nullptr;
 	}
+}
+
+void AScoreBoard::spawnFireworks(bool isPlayerOne){
+	//Seeds the random calls.
+	srand(time(0));
+
+	//Used in calculating distored coordinates.
+	float xDistortion, yDistortion;
+	FVector distoredCoords;
+
+	//Used in explosion tracking.
+	int explosionsToSpawn = (rand() % 10) + 1;
+	int splosionCount = 0;
+
+	//Center of area of potential explosions derived.
+	int negOrPos[2] = {1, -1};
+	FVector centerLoc = FVector(9000.0f * negOrPos[isPlayerOne], 0.0f, 30.0f);
+
+	//Spawns the specified number of explosions.
+	while (splosionCount < explosionsToSpawn){
+		//X and y coordinate offsets generated.
+		xDistortion = (rand() % 8000) * negOrPos[rand() % 2];
+		yDistortion = (rand() % 4000) * negOrPos[rand() % 2]; 
+
+		distoredCoords = FVector(centerLoc[0] + xDistortion, centerLoc[1] + yDistortion, centerLoc[2]);
+
+		//Spawns explosion with desired coordinates.
+		auto splos = GetWorld()->SpawnActor<AExplosion>();
+		splos->explode(distoredCoords);
+		splosionCount++;
+
+	}
+
 }
 
 // Called every frame
@@ -112,6 +145,11 @@ void AScoreBoard::Tick(float DeltaTime)
 	if (ballHasExploded && tickCount % 400 == 0){
 		createBall();
 		ballHasExploded = false;
+	}
+
+	//Spawns fireworks for winning player.
+	if (isGameEnd && tickCount % 360 == 0){
+		spawnFireworks(previousLoser == 2);
 	}
 
 	//Changes level back to main menu once 
