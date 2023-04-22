@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//16 Apr, 2023
+//22 Apr, 2023
 //XtremePong
 
 #pragma once
@@ -12,6 +12,9 @@
 #include "Engine/EngineTypes.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
+
+#include "Kismet/GameplayStatics.h"
+
 #include "ScoreBoard.generated.h"
 
 using namespace std;
@@ -47,7 +50,7 @@ public:
 		tickCount;
 
 	//Used to track balls and the number of them on the board.
-	ABall *balls[64];
+	ABall *ball;
 	int ballCount;
 
 	bool isGameEnd, ballHasExploded;
@@ -67,7 +70,7 @@ public:
 		
 	//Checks if a given player has won a round/game.
 	//Returns 1 for player 1 win, 2 for player 2 win, and 0 for no wins.
-	int isWin(); //ADD PARTICLE GENERATION LATER!
+	int isWin();
 
 	//Resets player scores and increments to new round.
 	// If maxRoundCount rounds have occured, the game is over.
