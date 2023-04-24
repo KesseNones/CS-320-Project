@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//16 Apr, 2023
+//22 Apr, 2023
 //Explosion Particle Class
 
 #include "ExplosionParticle.h"
@@ -25,12 +25,19 @@ AExplosionParticle::AExplosionParticle()
 		PrimitiveComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
+	//Fundamental material components.
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMesh(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'"));
-	static ConstructorHelpers::FObjectFinder<UMaterial> SphereMaterial(TEXT("Material'/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial'"));
-
+	static ConstructorHelpers::FObjectFinder<UMaterial> SphereMaterial(TEXT("Material'Game/explosion'"));
 	if (SphereMesh.Succeeded()) particleTexture->SetStaticMesh(SphereMesh.Object);
 	if (SphereMaterial.Succeeded()) particleTexture->SetMaterial(0, SphereMaterial.Object);
 
+
+	//Sets particle material and size.
+	//Credit for making explosion material:
+	// https://www.youtube.com/watch?v=rkVOkFFYvIs 
+	// ("Make Objects Glow With Emissive Materials - Unreal Engine 5 UE5 Free Tutorial")
+	UMaterial* splosionLight = LoadObject<UMaterial>(nullptr, TEXT("/Game/explosion"));
+	particleTexture->SetMaterial(0, splosionLight);
 	particleTexture->SetWorldScale3D(FVector(2.0f));
 
 }

@@ -495,11 +495,11 @@ bool FBallCreationTest::RunTest(FString const& Parameters){
 	board->createBall();
 
 	//Gets Ball's coordinates.
-	auto ballPtr = board->balls[board->ballCount - 1];
+	auto ballPtr = board->ball;
 	FVector ballCoords = ballPtr->GetActorLocation();
 
 	//Gets rid of spawned ball.
-	board->balls[0]->Destroy();
+	board->ball->Destroy();
 
 	//Gets rid of test scoreboard.
 	board->Destroy();

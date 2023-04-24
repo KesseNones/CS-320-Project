@@ -1,5 +1,5 @@
 //Jesse A. Jones
-//16 Apr, 2023
+//22 Apr, 2023
 //XtremePong ScoreBoard
 
 #include "ScoreBoard.h"
@@ -23,7 +23,7 @@ AScoreBoard::AScoreBoard()
 	gameRound = 0;
 	previousLoser = 0;
 
-	roundWinCount = 10;
+	roundWinCount = 2;
 	maxRoundCount = 3;
 
 	//Creates initial score text.
@@ -33,7 +33,7 @@ AScoreBoard::AScoreBoard()
 	scoreModel = nullptr;
 	updateScoreboard(scoreText);
 
-	ballCount = 0;
+	ball = nullptr;
 
 	player1RoundSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/playerOneRoundVictorySound"));
 	player2RoundSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/GameSounds/playerTwoRoundVictorySound"));
@@ -66,10 +66,10 @@ void AScoreBoard::createBall(){
 	FRotator ballRot = FRotator(0.0f, 0.0f, 0.0f);
 	
 	//Makes ball if there isn't one and the game isn't over.
-	if ((balls[0] == nullptr) && !(isGameEnd)){
+	if ((ball == nullptr) && !(isGameEnd)){
 		//Creates ball and sets appropriate scale, position, and rotation.
-		balls[ballCount] = GetWorld()->SpawnActor<ABall>(ballLoc, ballRot);
-		balls[ballCount]->SetActorScale3D(FVector(13.0f));
+		ball = GetWorld()->SpawnActor<ABall>(ballLoc, ballRot);
+		ball->SetActorScale3D(FVector(13.0f));
 
 		//Determines which direction the ball travels after spawning.
 		if (previousLoser == 1){
@@ -80,8 +80,7 @@ void AScoreBoard::createBall(){
 			ballSpeed = posOrNegVel[time(0) % 2] * 5000.0f; 
 		}
 
-		balls[ballCount]->setBallVelocity(FVector(ballSpeed, 0.0f, 0.0f));
-		ballCount++;
+		ball->setBallVelocity(FVector(ballSpeed, 0.0f, 0.0f));
 
 		scoreText = updateScoreText("");
 		updateScoreboard(scoreText);
@@ -93,15 +92,48 @@ void AScoreBoard::createBall(){
 
 void AScoreBoard::destroyBall(){
 	FVector actorLoc;
-	auto splosion = GetWorld()->SpawnActor<AExplosion>();
-	if (ballCount > 0){
-		actorLoc = balls[ballCount - 1]->GetActorLocation();
-		splosion->explode(actorLoc);							
-		GetWorld()->DestroyActor(balls[0]);
-		balls[0] = nullptr;
 
-		ballCount--;
+	//If a ball exists, destroy it and spawn an explosion there.
+	if (ball != nullptr){
+		auto splosion = GetWorld()->SpawnActor<AExplosion>();
+		actorLoc = ball->GetActorLocation();
+		splosion->explode(actorLoc);							
+		GetWorld()->DestroyActor(ball);
+		ball = nullptr;
 	}
+}
+
+void AScoreBoard::spawnFireworks(bool isPlayerOne){
+	//Seeds the random calls.
+	srand(time(0));
+
+	//Used in calculating distored coordinates.
+	float xDistortion, yDistortion;
+	FVector distoredCoords;
+
+	//Used in explosion tracking.
+	int explosionsToSpawn = (rand() % 10) + 1;
+	int splosionCount = 0;
+
+	//Center of area of potential explosions derived.
+	int negOrPos[2] = {1, -1};
+	FVector centerLoc = FVector(9000.0f * negOrPos[isPlayerOne], 0.0f, 30.0f);
+
+	//Spawns the specified number of explosions.
+	while (splosionCount < explosionsToSpawn){
+		//X and y coordinate offsets generated.
+		xDistortion = (rand() % 8000) * negOrPos[rand() % 2];
+		yDistortion = (rand() % 4000) * negOrPos[rand() % 2]; 
+
+		distoredCoords = FVector(centerLoc[0] + xDistortion, centerLoc[1] + yDistortion, centerLoc[2]);
+
+		//Spawns explosion with desired coordinates.
+		auto splos = GetWorld()->SpawnActor<AExplosion>();
+		splos->explode(distoredCoords);
+		splosionCount++;
+
+	}
+
 }
 
 // Called every frame
@@ -109,9 +141,21 @@ void AScoreBoard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//Respawns the ball once the explosion has finished.
 	if (ballHasExploded && tickCount % 400 == 0){
 		createBall();
 		ballHasExploded = false;
+	}
+
+	//Spawns fireworks for winning player.
+	if (isGameEnd && tickCount % 360 == 0){
+		spawnFireworks(previousLoser == 2);
+	}
+
+	//Changes level back to main menu once 
+	// the game is over and enough ticks have elapsed.
+	if (isGameEnd && tickCount % 1800 == 0){
+		UGameplayStatics::OpenLevel(GetWorld(), TEXT("MainMenuLevel"));
 	}
 
 	tickCount++;
@@ -143,6 +187,7 @@ int AScoreBoard::isWin() {
 			scoreText = updateScoreText("Player 1 Wins Game!");
 			updateScoreboard(scoreText);
 			isGameEnd = true;
+			tickCount = 1;
 		}
 		return 1;
 	}
@@ -162,6 +207,7 @@ int AScoreBoard::isWin() {
 			scoreText = updateScoreText("Player 2 Wins Game!");
 			updateScoreboard(scoreText);
 			isGameEnd = true;
+			tickCount = 1;
 		}
 		return 2;
 	}
@@ -227,7 +273,7 @@ void AScoreBoard::updateScoreboard(string scoreStr) {
 }
 
 void AScoreBoard::scoreForPlayer1(){
-	if ((balls[0] != nullptr) && (balls[0]->GetActorLocation()[0] >= 12000.0f)){
+	if ((ball != nullptr) && (ball->GetActorLocation()[0] >= 12000.0f)){
 		tickCount = 1;
 		ballHasExploded = true;
 		destroyBall();
@@ -241,7 +287,7 @@ void AScoreBoard::scoreForPlayer1(){
 }
 
 void AScoreBoard::scoreForPlayer2(){
-	if ((balls[0] != nullptr) && (balls[0]->GetActorLocation()[0] <= -12000.0f)){
+	if ((ball != nullptr) && (ball->GetActorLocation()[0] <= -12000.0f)){
 		tickCount = 1;
 		ballHasExploded = true;
 		destroyBall();
